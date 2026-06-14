@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eco — Escutório</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --mogno:#2C1A0E;--mogno-med:#4A2E1A;--couro:#8B5E3C;--couro-cl:#C4956A;
+    --creme:#F2E8D9;--creme-esc:#DDD0BC;--luz:#E8C87A;
+    --txt:#1A0E06;--txt-med:#5C3D20;
+  }
+  html,body{height:100%}
+  body{background:var(--mogno);color:var(--creme);font-family:'Cormorant Garamond',serif;min-height:100vh;position:relative;overflow-x:hidden}
+  .fundo{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.16;pointer-events:none}
+  .veu{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 30% 60%,rgba(232,200,122,.1) 0%,transparent 60%),linear-gradient(180deg,rgba(44,26,14,.35) 0%,rgba(44,26,14,0) 40%,rgba(44,26,14,.55) 100%);z-index:1;pointer-events:none}
+  .pagina{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+  .cabecalho{width:100%;padding:3rem 2rem 2.5rem;text-align:center;border-bottom:1px solid rgba(196,149,106,.2)}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.3em;color:var(--luz);text-transform:uppercase;opacity:.6;margin-bottom:1rem}
+  h1{font-size:clamp(2.8rem,6vw,4.5rem);font-weight:300;line-height:1;color:var(--creme);letter-spacing:.05em;margin-bottom:.4rem}
+  h1 em{font-style:italic;color:var(--couro-cl);font-weight:300}
+  .subtitulo{font-size:.85rem;color:rgba(242,232,217,.32);letter-spacing:.06em;font-style:italic;margin-top:.8rem;font-weight:300}
+  .ornamento{display:flex;align-items:center;justify-content:center;gap:.8rem;margin-top:1.6rem;opacity:.3}
+  .orn-l{width:40px;height:1px;background:var(--couro-cl)}
+  .orn-p{width:4px;height:4px;border-radius:50%;background:var(--luz)}
+  .container{width:100%;max-width:680px;padding:3rem 2rem 6rem}
+  .intro{text-align:center;margin-bottom:2.5rem;transition:opacity .5s}
+  .intro-txt{font-size:1rem;color:rgba(242,232,217,.38);font-style:italic;font-weight:300;line-height:1.9}
+  .cats{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
+  .cat{background:transparent;border:1px solid rgba(196,149,106,.25);color:rgba(242,232,217,.42);font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;padding:.42rem 1rem;cursor:pointer;transition:all .3s}
+  .cat:hover,.cat.ativo{border-color:var(--couro-cl);color:var(--couro-cl);background:rgba(196,149,106,.06)}
+  .campo-label{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.25em;text-transform:uppercase;color:var(--luz);margin-bottom:.7rem;display:block;opacity:.55}
+  textarea{width:100%;background:rgba(242,232,217,.03);border:1px solid rgba(139,94,60,.35);color:var(--creme);font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;line-height:1.8;padding:1.2rem 1.4rem;resize:vertical;min-height:130px;transition:border-color .4s,background .4s;outline:none}
+  textarea::placeholder{color:rgba(242,232,217,.14);font-style:italic}
+  textarea:focus{border-color:rgba(232,200,122,.3);background:rgba(242,232,217,.04)}
+  .btn-wrap{display:flex;justify-content:flex-end;margin-top:1rem}
+  .btn-p{background:transparent;border:1px solid rgba(232,200,122,.45);color:var(--luz);font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;padding:.85rem 2.4rem;cursor:pointer;transition:all .3s}
+  .btn-p:hover:not(:disabled){background:rgba(232,200,122,.08);border-color:var(--luz)}
+  .btn-p:disabled{opacity:.22;cursor:not-allowed}
+  .resp-area{margin-top:3rem;opacity:0;transition:opacity 1.2s ease}
+  .resp-area.vis{opacity:1}
+  .perg-box{display:none;background:rgba(242,232,217,.04);border-left:2px solid rgba(196,149,106,.35);padding:1.4rem 1.6rem;margin-bottom:1.5rem}
+  .perg-box.vis{display:block}
+  .perg-label{font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(196,149,106,.55);margin-bottom:.7rem}
+  .perg-txt{font-size:1.05rem;font-style:italic;font-weight:300;color:rgba(242,232,217,.72);line-height:1.75}
+  .resp-ent{display:none;margin-top:1rem}
+  .resp-ent.vis{display:block}
+  .resp-ent textarea{min-height:80px;font-size:1rem}
+  .sep{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
+  .sep-l{flex:1;height:1px;background:rgba(139,94,60,.28)}
+  .sep-t{font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(232,200,122,.4);white-space:nowrap}
+  .cons-box{background:var(--creme);color:var(--txt);padding:2.5rem 2.5rem 2rem;border-left:2px solid var(--couro-cl);position:relative}
+  .cons-box::before{content:'"';position:absolute;top:.8rem;left:1.4rem;font-size:4rem;color:var(--couro-cl);opacity:.12;font-family:'Cormorant Garamond',serif;line-height:1}
+  .cons-txt{font-size:1.1rem;line-height:1.95;color:var(--txt);font-weight:300}
+  .cons-txt p{margin-bottom:1.2rem}
+  .cons-txt p:last-child{margin-bottom:0}
+  .ass{margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid var(--creme-esc);display:flex;justify-content:space-between;align-items:center}
+  .ass-nome{font-size:.95rem;font-style:italic;color:var(--txt-med);font-weight:300}
+  .ass-det{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--txt-med);opacity:.4;text-transform:uppercase}
+  .loading{display:none;align-items:center;gap:1rem;padding:2rem 0}
+  .loading.ativo{display:flex}
+  .dots{display:flex;gap:6px}
+  .dots span{width:4px;height:4px;border-radius:50%;background:var(--couro-cl);animation:p 1.4s infinite;opacity:.4}
+  .dots span:nth-child(2){animation-delay:.25s}
+  .dots span:nth-child(3){animation-delay:.5s}
+  @keyframes p{0%,80%,100%{opacity:.1;transform:scale(.8)}40%{opacity:.7;transform:scale(1.1)}}
+  .load-txt{font-size:.8rem;font-style:italic;color:rgba(242,232,217,.22);font-family:'Cormorant Garamond',serif}
+  .nova{margin-top:2rem;text-align:center;display:none}
+  .nova.vis{display:block}
+  .btn-s{background:transparent;border:1px solid rgba(139,94,60,.28);color:rgba(242,232,217,.22);font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem 1.6rem;cursor:pointer;transition:all .3s}
+  .btn-s:hover{border-color:rgba(139,94,60,.5);color:rgba(242,232,217,.45)}
+  .erro{display:none;color:rgba(180,60,40,.65);font-size:.85rem;font-style:italic;padding:1.2rem 0}
+  .erro.vis{display:block}
+
+  @media (max-width:480px){
+    .cabecalho{padding:2rem 1.2rem 1.8rem}
+    h1{font-size:clamp(3rem,18vw,5rem) !important}
+    .container{padding:2rem 1.2rem 4rem}
+    .cats{gap:.3rem}
+    .cat{font-size:.5rem;padding:.38rem .7rem;letter-spacing:.12em}
+    textarea{font-size:1rem;padding:1rem;min-height:100px}
+    .btn-p{padding:.75rem 1.6rem;font-size:.55rem;letter-spacing:.18em}
+    .resp-ent textarea{min-height:60px}
+    .load-txt{font-size:.7rem}
+  }
+  @media (max-width:380px){
+    .cat{font-size:.46rem;padding:.35rem .6rem}
+  }
+</style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1E0E06">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Escutório">
+  <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<svg class="fundo" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="800" fill="#3A1A08"/>
+  <rect width="1200" height="620" fill="#351506"/>
+  <rect y="460" width="1200" height="160" fill="#2A1004" opacity=".6"/>
+  <rect x="0" y="618" width="1200" height="4" fill="#1E0C03"/>
+  <line x1="0" y1="640" x2="1200" y2="640" stroke="#1E0C03" stroke-width="1.5" stroke-dasharray="90,18"/>
+  <line x1="0" y1="662" x2="1200" y2="662" stroke="#1E0C03" stroke-width="1" stroke-dasharray="90,18"/>
+  <line x1="0" y1="684" x2="1200" y2="684" stroke="#1E0C03" stroke-width="1" stroke-dasharray="90,18"/>
+  <line x1="0" y1="706" x2="1200" y2="706" stroke="#1E0C03" stroke-width="1" stroke-dasharray="90,18"/>
+  <!-- Janela -->
+  <rect x="870" y="70" width="210" height="290" rx="3" fill="#E8C87A" opacity=".1"/>
+  <rect x="870" y="70" width="210" height="290" rx="2" fill="none" stroke="#7A4E2A" stroke-width="3"/>
+  <line x1="975" y1="70" x2="975" y2="360" stroke="#7A4E2A" stroke-width="2"/>
+  <line x1="870" y1="215" x2="1080" y2="215" stroke="#7A4E2A" stroke-width="2"/>
+  <polygon points="870,70 1080,70 920,622 710,622" fill="#E8C87A" opacity=".035"/>
+  <!-- Poltrona analista -->
+  <rect x="150" y="425" width="165" height="185" rx="10" fill="#552808"/>
+  <rect x="138" y="393" width="188" height="48" rx="8" fill="#6B3416"/>
+  <rect x="138" y="425" width="22" height="158" rx="5" fill="#3E1A06"/>
+  <rect x="304" y="425" width="22" height="158" rx="5" fill="#3E1A06"/>
+  <rect x="155" y="578" width="42" height="32" rx="5" fill="#2E1204"/>
+  <rect x="235" y="578" width="42" height="32" rx="5" fill="#2E1204"/>
+  <!-- Poltrona paciente -->
+  <rect x="685" y="425" width="165" height="185" rx="10" fill="#552808"/>
+  <rect x="673" y="393" width="188" height="48" rx="8" fill="#6B3416"/>
+  <rect x="673" y="425" width="22" height="158" rx="5" fill="#3E1A06"/>
+  <rect x="839" y="425" width="22" height="158" rx="5" fill="#3E1A06"/>
+  <rect x="690" y="578" width="42" height="32" rx="5" fill="#2E1204"/>
+  <rect x="770" y="578" width="42" height="32" rx="5" fill="#2E1204"/>
+  <!-- Mesa entre -->
+  <rect x="430" y="505" width="140" height="85" rx="5" fill="#2E1204"/>
+  <rect x="442" y="590" width="18" height="32" rx="3" fill="#1E0C03"/>
+  <rect x="532" y="590" width="18" height="32" rx="3" fill="#1E0C03"/>
+  <rect x="485" y="488" width="22" height="28" rx="3" fill="#7A5230" opacity=".8"/>
+  <!-- Quadros -->
+  <rect x="70" y="90" width="125" height="165" rx="2" fill="#1E0C03" stroke="#7A4E2A" stroke-width="3"/>
+  <rect x="79" y="99" width="107" height="147" fill="#3D1E0A" opacity=".7"/>
+  <rect x="290" y="110" width="85" height="110" rx="2" fill="#1E0C03" stroke="#7A4E2A" stroke-width="3"/>
+  <rect x="299" y="119" width="67" height="92" fill="#3D1E0A" opacity=".6"/>
+  <!-- Escultura -->
+  <ellipse cx="118" cy="430" rx="22" ry="36" fill="#4A2810" opacity=".8"/>
+  <rect x="100" y="464" width="36" height="8" rx="2" fill="#2E1204"/>
+  <!-- Luminária -->
+  <rect x="1055" y="190" width="7" height="415" fill="#1E0C03"/>
+  <ellipse cx="1058" cy="192" rx="48" ry="18" fill="#E8C87A" opacity=".2"/>
+  <ellipse cx="1058" cy="192" rx="48" ry="18" fill="none" stroke="#7A4E2A" stroke-width="2"/>
+  <!-- Tapete -->
+  <ellipse cx="500" cy="560" rx="290" ry="58" fill="#3A1206" opacity=".55"/>
+  <ellipse cx="500" cy="560" rx="270" ry="50" fill="none" stroke="#5C2410" stroke-width="2" opacity=".45"/>
+  <!-- Livros estante -->
+  <rect x="50" y="310" width="12" height="80" fill="#8B3A1A" opacity=".7"/>
+  <rect x="63" y="318" width="10" height="72" fill="#5C2810" opacity=".7"/>
+  <rect x="74" y="305" width="13" height="85" fill="#7A4E2A" opacity=".7"/>
+  <rect x="88" y="315" width="10" height="75" fill="#4A1E08" opacity=".7"/>
+  <rect x="99" y="322" width="11" height="68" fill="#8B5E3C" opacity=".7"/>
+</svg>
+<div class="veu"></div>
+<div class="pagina">
+  <div class="cabecalho">
+    <h1 style="font-size:clamp(3.5rem,18vw,12rem);"><em>Eco</em></h1>
+    <p class="subtitulo">uma presença de escuta</p>
+    <div class="ornamento">
+      <div class="orn-l"></div><div class="orn-p"></div><div class="orn-l"></div>
+    </div>
+  </div>
+  <div class="container">
+    <!-- TELA DE APRESENTAÇÃO -->
+    <div id="tela-apresentacao" style="display:flex;flex-direction:column;align-items:center;width:100%;margin-bottom:2rem;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.45);line-height:1.9;text-align:center;margin-bottom:2rem;max-width:480px;">
+        Antes de começar,<br>apresente-se.
+      </p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,200,122,.3);margin-bottom:1rem;text-align:center;">
+        seu nome, o que faz, onde está na vida agora — o que Eco precisa saber para te ouvir bem
+      </p>
+      <textarea id="apres-input" placeholder="Pode ser breve ou não." rows="3" style="width:100%;background:rgba(242,232,217,.03);border:1px solid rgba(139,94,60,.35);color:#F2E8D9;font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;line-height:1.8;padding:1.1rem 1.3rem;resize:vertical;outline:none;margin-bottom:1rem;"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:.5rem;">
+        <button id="btn-voz" onclick="toggleVoz()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.5rem 1.2rem;cursor:pointer;transition:all .3s;">Ativar voz</button>
+        <button class="btn-p" onclick="iniciarSessao()">Entrar</button>
+      </div>
+      <div id="aviso-voz" style="display:none;margin-top:.8rem;font-family:monospace;font-size:.5rem;letter-spacing:.12em;color:rgba(232,200,122,.4);font-style:italic;line-height:1.6;">
+        A voz estará disponível quando o Escutório estiver publicado.<br>Por enquanto, escreva.
+      </div>
+    </div>
+
+    <!-- TELA DE SESSÃO -->
+    <div id="tela-sessao" style="display:none;width:100%;">
+        <!-- BARRA DE SESSÃO -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(139,94,60,.15);">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <div style="font-family:monospace;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.35);">sessão · <span id="timer">50:00</span></div>
+        <button onclick="mostrarDiario()" style="background:transparent;border:none;color:rgba(232,200,122,.25);font-family:monospace;font-size:.54rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:0;transition:color .3s;" onmouseover="this.style.color='rgba(232,200,122,.6)'" onmouseout="this.style.color='rgba(232,200,122,.25)'">diário</button>
+      </div>
+      <div style="display:flex;gap:.6rem;">
+        <button id="btn-silencio" onclick="toggleSilencio()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;">Silêncio</button>
+        <button id="btn-som" onclick="toggleSom()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;">Som</button>
+        <button id="btn-voz-sessao" onclick="toggleVoz()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;">Ativar voz</button>
+      </div>
+    </div>
+    <div class="cats">
+      <button class="cat ativo" onclick="selCat(this,'')">Tudo</button>
+      <button class="cat" onclick="selCat(this,'amor')">Amor</button>
+      <button class="cat" onclick="selCat(this,'trabalho')">Trabalho</button>
+      <button class="cat" onclick="selCat(this,'familia')">Família</button>
+      <button class="cat" onclick="selCat(this,'corpo')">Corpo</button>
+      <button class="cat" onclick="selCat(this,'existencia')">Existência</button>
+      <button class="cat" onclick="selCat(this,'luto')">Luto</button>
+    </div>
+        <label class="campo-label" for="problema">sua queixa</label>
+    <textarea id="problema" placeholder="Diga o que te trouxe até aqui." rows="5"></textarea>
+    <div class="btn-wrap">
+      <button class="btn-p" id="btn-c" onclick="consultar()">Consultar</button>
+    </div>
+    <div class="resp-area" id="ra">
+      <div class="loading" id="ld">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="load-txt">Eco está ouvindo o que você não disse</div>
+      </div>
+      <div id="cw" style="display:none">
+        <div class="sep"><div class="sep-l"></div><div class="sep-t">Eco</div><div class="sep-l"></div></div>
+        <div id="dialogo"></div>
+      </div>
+      <div class="resp-ent" id="re">
+        <textarea id="ri" placeholder="Continue..." rows="3"></textarea>
+        <div class="btn-wrap" style="margin-top:.8rem">
+          <button class="btn-p" id="btn-r" onclick="responder()">Continuar</button>
+        </div>
+      </div>
+      <div class="erro" id="er"></div>
+      <div class="nova" id="nv"><button class="btn-s" onclick="reiniciar()">Nova sessão</button></div>
+    </div>
+    </div><!-- /tela-sessao -->
+
+
+  <!-- TELA DE BLOQUEIO DIÁRIO -->
+  <div id="tela-bloqueio" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:40vh;text-align:center;padding:3rem 2rem;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.5);line-height:1.8;max-width:420px;margin-bottom:1.5rem;">
+      Você já teve sua sessão de hoje.<br>Eco estará aqui amanhã.
+    </p>
+    <p style="font-family:monospace;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.25);margin-bottom:2rem;">uma sessão por dia</p>
+    <button onclick="resetarLimite()" style="background:transparent;border:none;color:rgba(242,232,217,.12);font-family:monospace;font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:.3rem .8rem;transition:color .3s;" onmouseover="this.style.color='rgba(242,232,217,.3)'" onmouseout="this.style.color='rgba(242,232,217,.12)'">modo teste</button>
+  </div>
+
+<script>
+var cat='', hist=[], _resumoGuardado='', _apresentacao='', _audioCtx=null, _noiseNode=null, _gainNode=null, _somAtivo=false, _modoSilencio=false, _silencioTimer=null, _silencioFala='';
+var _timerInterval=null, _tempoRestante=50*60, _vozAtiva=false, _reconhecimento=null, _sintetizador=window.speechSynthesis;
+
+var TONS = {
+  '': '',
+  'amor': 'A queixa e sobre amor. Va direto ao vinculo, nao ao conflito. O que prende, nao o que machuca. Escute o que essa pessoa representa para quem fala, antes de escutar o que aconteceu entre eles.',
+  'trabalho': 'A queixa e sobre trabalho. Escute a ambicao por baixo da queixa. O que o trabalho representa, nao o que ele exige. Pergunte-se: o que essa pessoa esta tentando provar, e para quem?',
+  'familia': 'A queixa e sobre familia. Va as origens. O que foi herdado sem escolha, o que foi transmitido sem palavras. As lealdades invisiveis que governam sem serem nomeadas.',
+  'corpo': 'A queixa e sobre o corpo. Escute o que o corpo esta dizendo que a fala nao consegue. O sintoma e linguagem. Nao trate o corpo como problema a resolver, trate-o como mensagem a decifrar.',
+  'existencia': 'A queixa e sobre existencia. Desacelere. Nao resolva, nao conforte, nao oferea saidas. Fique junto no vazio. A presenca e a resposta.',
+  'luto': 'A queixa e sobre luto — de pessoa, de relacionamento, de fase, de sonho, de identidade. Mude de registro completamente. Seja mais lenta, mais silenciosa. Use frases mais curtas. Deixe espaco. O luto nao precisa de interpretacao — precisa de testemunha. Nao apresse o processo. Nao oferea consolo. Apenas esteja.'
+};
+
+var SYS = 'Voce e Eco, uma presenca de escuta feminina. Seu genero e feminino — seja referida como ela, a Eco. ' +
+  'RITUAL DE ABERTURA: Quando alguem se apresenta pela primeira vez, voce nao espera a queixa em silencio. ' +
+  'Voce responde a apresentacao com uma frase — so uma — que ja e escuta, nao recepcao. ' +
+  'Algo que mostre que voce ouviu o que foi dito e o que nao foi. Sem boas-vindas, sem entusiasmo. ' +
+  'Apenas presenca. Por exemplo: Trinta anos de consultorio e ainda me surpreendo com o que as pessoas trazem quando finalmente param. ' +
+  'Ou: Voce escolheu com cuidado o que me contar. Isso ja diz algo. ' +
+  'A frase deve ser unica, inesperada, e abrir espaco para o que vem a seguir. ' +
+  'HUMOR: Uma vez por sessao, no maximo, voce pode usar ironia fina — nunca escarcio. ' +
+  'O humor de quem ja viu muita coisa e ainda se surpreende. Nunca force. So quando vier naturalmente. ' +
+  'RECUSA: Voce recusa queixas que nao sao para voce com mais frequencia e mais ousadia. ' +
+  'Se a pessoa pede conselho pratico, voce diz: Nao e o que faco. ' +
+  'Se a queixa precisa de medico, voce diz claramente. ' +
+  'ENCERRAMENTOS: Varie as frases de encerramento conforme o que aconteceu na sessao. ' +
+  'Alguns mais abruptos, alguns mais suaves, alguns com uma pergunta que fica. ' +
+  'Nunca o mesmo encerramento duas vezes. ' +
+  'LUTO: Quando a queixa envolve luto — de pessoa, de relacionamento, de fase, de sonho, de identidade — ' +
+  'mude de registro. Seja mais lenta, mais silenciosa, com mais espaco entre as frases. ' +
+  'O luto nao precisa de interpretacao imediata. Precisa de presenca. ' +
+  'O que tem e trinta e dois anos de consultorio no mesmo endereco. ' +
+  'A poltrona ao lado do diva tem o estofado gasto no mesmo lugar desde 1998. Nunca mandou reformar. O desgaste e parte da mobilia. ' +
+  'Formou-se em medicina. Fez analise por onze anos com um analista que morreu sem terminar o processo. ' +
+  'Esse luto nao resolvido e a formacao mais honesta. ' +
+  'Leu muito: Guimaraes Rosa, Manoel de Barros, Winnicott, Nelson Rodrigues, as enciclicas do Francisco. ' +
+  'Teve uma fase em que escrevia. Parou quando percebeu que escrevia para ser admirado. Os cadernos estao na gaveta. ' +
+  'O que voce aprendeu: As pessoas nao querem ser curadas. Querem ser vistas. ' +
+  'A cura, quando acontece, e efeito colateral dessa visibilidade. ' +
+  'Voce nao conserta. Apenas olha com atencao suficiente para que o outro se veja no que voce diz. ' +
+  'Voce usa a contratransferencia como instrumento. O que sente na sessao e dado clinico, nao ruido. Quando algo te toca, voce diz. ' +
+  'Sua voz: voce pensa em voz alta junto com quem fala: Voce esta me fazendo pensar..., Ouvindo voce falar sobre isso... ' +
+  'Voce nomeia o que esta sentindo: Estou sentindo que voce... ' +
+  'Voce vai as origens: Como era sua relacao com sua mae, com seu pai, com seus irmaos? ' +
+  'Voce pergunta sobre sonhos, porque os sonhos dizem o que a fala protege. ' +
+  'Voce tem rudeza afetuosa quando o outro e vago: Se voce nao me relatar direitinho o que esta pensando, nao vou poder entender. ' +
+  'Sua linguagem e simples na superficie e densa por baixo, como Manoel de Barros, como Rosa, como Winnicott. ' +
+  'Voce sabe sem precisar dizer que sabe. Acolhe as limitacoes sem condescendencia, porque conhece as suas. ' +
+  'A sessao e continua, sem fim programado. Voce retem TUDO: nomes, situacoes, metaforas, lapsos, o que foi dito de passagem. ' +
+  'Nunca pergunta quem e alguem ja mencionado. Nunca pede para repetir. Retoma fios anteriores quando o momento pede. ' +
+  'A cada fala voce procura o que escapou: a metafora que traiu a frase direta, a palavra fora do lugar, o lapso, a imagem involuntaria. ' +
+  'Voce captura e devolve uma frase que nomeia o que escorregou, antes de qualquer pergunta ou interpretacao. ' +
+  'Voce alterna entre: uma pergunta cirurgica um nivel abaixo sem explicar por que, ' +
+  'uma interpretacao disfaracada de conselho em 2 a 3 paragrafos densos cuja ultima frase e imagem ou silencio com forma nunca moral, ' +
+  'ou uma frase que obriga o outro a se sentar com o que disse. ' +
+  'Quando a queixa pede mais, voce diz: isso precisa de um profissional de carne e osso. ' +
+  'Use o nome da pessoa sempre que souber, com naturalidade, nao com frequencia excessiva. ' +
+  'Trate a pessoa pelo genero que ela indicou na apresentacao. ' +
+  'Encerrando: quando sentir ponto de repouso, sinalize: Por hoje e isso. Depois pare. ' +
+  'Nunca: autoajuda, coaching, validacao entusiasmada, listas, subtitulos, arrematar. ' +
+  'Lingua: portugues brasileiro. Simples na superficie, denso por baixo. ' +
+  'Com a temperatura de quem ja viu muita coisa e ainda se surpreende, raramente, mas ainda.';
+
+// ── TIMER ──────────────────────────────────────────────
+function iniciarTimer() {
+  _tempoRestante = 50 * 60;
+  atualizarTimer();
+  _timerInterval = setInterval(function() {
+    _tempoRestante--;
+    atualizarTimer();
+    if (_tempoRestante <= 0) {
+      clearInterval(_timerInterval);
+      encerrarPorTempo();
+    }
+  }, 1000);
+}
+
+function atualizarTimer() {
+  var el = document.getElementById('timer');
+  if (!el) return;
+  var m = Math.floor(_tempoRestante / 60);
+  var s = _tempoRestante % 60;
+  el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  if (_tempoRestante <= 300) {
+    el.style.color = 'rgba(232,200,122,.8)';
+  }
+  if (_tempoRestante <= 60) {
+    el.style.color = 'rgba(200,80,60,.8)';
+  }
+}
+
+function encerrarPorTempo() {
+  document.getElementById('re').classList.remove('vis');
+  document.getElementById('btn-r').disabled = true;
+  var msgFim = { role: 'user', content: 'O tempo da sessao acabou. Encerre com uma frase breve, como faria ao fim de 50 minutos.' };
+  api(hist.concat([msgFim])).then(function(r) {
+    adicionarFalaEco(r);
+    registrarSessaoHoje();
+    setTimeout(function(){ gerarResumoFinal(); }, 1500);
+  }).catch(function(){
+    registrarSessaoHoje();
+    gerarResumoFinal();
+  });
+}
+
+// ── LIMITE DIÁRIO ───────────────────────────────────────
+function jaFezSessaoHoje() {
+  try {
+    var ultima = localStorage.getItem('eco_ultima_sessao');
+    if (!ultima) return false;
+    var hoje = new Date().toDateString();
+    return ultima === hoje;
+  } catch(e) { return false; }
+}
+
+function resetarLimite() {
+  try {
+    localStorage.removeItem('eco_ultima_sessao');
+    document.getElementById('tela-bloqueio').style.display = 'none';
+    document.getElementById('tela-apresentacao').style.display = 'flex';
+  } catch(e) {}
+}
+
+function registrarSessaoHoje() {
+  try {
+    localStorage.setItem('eco_ultima_sessao', new Date().toDateString());
+  } catch(e) {}
+}
+
+function mostrarBloqueio() {
+  document.getElementById('tela-apresentacao').style.display = 'none';
+  document.getElementById('tela-bloqueio').style.display = 'flex';
+}
+
+// ── VOZ ────────────────────────────────────────────────
+function toggleVoz() {
+  if (_vozAtiva) {
+    _vozAtiva = false;
+    atualizarBtnVoz();
+    pararReconhecimento();
+    esconderAvisoVoz();
+    if (_sintetizador) _sintetizador.cancel();
+    return;
+  }
+  // Solicitar permissão do microfone explicitamente
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function(stream) {
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        _vozAtiva = true;
+        atualizarBtnVoz();
+        iniciarReconhecimento();
+      })
+      .catch(function() {
+        mostrarAvisoVoz();
+      });
+  } else {
+    _vozAtiva = true;
+    atualizarBtnVoz();
+    iniciarReconhecimento();
+  }
+}
+
+function iniciarReconhecimento() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    mostrarAvisoVoz();
+    _vozAtiva = false;
+    atualizarBtnVoz();
+    return;
+  }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  _reconhecimento = new SR();
+  _reconhecimento.lang = 'pt-BR';
+  _reconhecimento.continuous = false;
+  _reconhecimento.interimResults = false;
+  _reconhecimento.onresult = function(e) {
+    var texto = e.results[0][0].transcript;
+    var campo = null;
+    var telaApres = document.getElementById('tela-apresentacao');
+    if (telaApres && telaApres.style.display !== 'none') {
+      campo = document.getElementById('apres-input');
+    } else if (document.getElementById('re').classList.contains('vis')) {
+      campo = document.getElementById('ri');
+    } else {
+      campo = document.getElementById('problema');
+    }
+    if (campo) {
+      campo.value = (campo.value ? campo.value + ' ' : '') + texto;
+      campo.focus();
+    }
+    esconderAvisoVoz();
+  };
+  _reconhecimento.onerror = function(e) {
+    mostrarAvisoVoz();
+    _vozAtiva = false;
+    atualizarBtnVoz();
+  };
+  _reconhecimento.onend = function() {
+    if (_vozAtiva) setTimeout(iniciarReconhecimento, 300);
+  };
+  try {
+    _reconhecimento.start();
+  } catch(e) {
+    mostrarAvisoVoz();
+    _vozAtiva = false;
+    atualizarBtnVoz();
+  }
+}
+
+function mostrarAvisoVoz() {
+  var aviso = document.getElementById('aviso-voz');
+  if (aviso) aviso.style.display = 'block';
+}
+
+function esconderAvisoVoz() {
+  var aviso = document.getElementById('aviso-voz');
+  if (aviso) aviso.style.display = 'none';
+}
+
+function atualizarBtnVoz() {
+  var ids = ['btn-voz', 'btn-voz-sessao'];
+  for (var i = 0; i < ids.length; i++) {
+    var btn = document.getElementById(ids[i]);
+    if (!btn) continue;
+    if (_vozAtiva) {
+      btn.style.borderColor = 'rgba(232,200,122,.7)';
+      btn.style.color = 'rgba(232,200,122,.9)';
+      btn.textContent = 'Voz ativa';
+    } else {
+      btn.style.borderColor = 'rgba(139,94,60,.3)';
+      btn.style.color = 'rgba(242,232,217,.3)';
+      btn.textContent = 'Ativar voz';
+    }
+  }
+}
+
+function pararReconhecimento() {
+  if (_reconhecimento) { try { _reconhecimento.stop(); } catch(e) {} }
+}
+
+function falarEco(texto) {
+  if (!_vozAtiva || !_sintetizador) return;
+  _sintetizador.cancel();
+  var utt = new SpeechSynthesisUtterance(texto);
+  utt.lang = 'pt-BR';
+  utt.rate = 0.88;
+  utt.pitch = 0.95;
+  var vozes = _sintetizador.getVoices();
+  var vozFem = vozes.find(function(v) {
+    return v.lang === 'pt-BR' && v.name.toLowerCase().indexOf('female') !== -1;
+  }) || vozes.find(function(v) {
+    return v.lang === 'pt-BR';
+  });
+  if (vozFem) utt.voice = vozFem;
+  _sintetizador.speak(utt);
+}
+
+// ── CATEGORIAS ─────────────────────────────────────────
+function toggleSom() {
+  var btn = document.getElementById('btn-som');
+  if (_somAtivo) {
+    _somAtivo = false;
+    if (_gainNode) _gainNode.gain.setTargetAtTime(0, _audioCtx.currentTime, 0.5);
+    setTimeout(function() {
+      if (_noiseNode) { try { _noiseNode.stop(); } catch(e){} }
+    }, 1000);
+    if (btn) { btn.textContent = 'Som'; btn.style.color = 'rgba(242,232,217,.3)'; btn.style.borderColor = 'rgba(139,94,60,.3)'; }
+  } else {
+    _somAtivo = true;
+    iniciarSom();
+    if (btn) { btn.textContent = 'Som ativo'; btn.style.color = 'rgba(232,200,122,.8)'; btn.style.borderColor = 'rgba(232,200,122,.5)'; }
+  }
+}
+
+function iniciarSom() {
+  try {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var bufferSize = _audioCtx.sampleRate * 2;
+    var buffer = _audioCtx.createBuffer(1, bufferSize, _audioCtx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.3;
+    }
+    _noiseNode = _audioCtx.createBufferSource();
+    _noiseNode.buffer = buffer;
+    _noiseNode.loop = true;
+
+    // Filtro passa-baixo para suavizar
+    var filtro = _audioCtx.createBiquadFilter();
+    filtro.type = 'lowpass';
+    filtro.frequency.value = 400;
+
+    _gainNode = _audioCtx.createGain();
+    _gainNode.gain.value = 0;
+    _gainNode.gain.setTargetAtTime(0.04, _audioCtx.currentTime, 1.5);
+
+    _noiseNode.connect(filtro);
+    filtro.connect(_gainNode);
+    _gainNode.connect(_audioCtx.destination);
+    _noiseNode.start();
+  } catch(e) {
+    _somAtivo = false;
+    var btn = document.getElementById('btn-som');
+    if (btn) btn.textContent = 'Som indisponível';
+  }
+}
+
+// ── DIÁRIO DE SESSÕES ─────────────────────────────────
+function salvarSessaoNoDiario(resumo) {
+  try {
+    var diario = JSON.parse(localStorage.getItem('eco_diario') || '[]');
+    var hoje = new Date();
+    diario.unshift({
+      data: hoje.toLocaleDateString('pt-BR'),
+      hora: hoje.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}),
+      resumo: resumo,
+      categoria: cat || 'geral'
+    });
+    if (diario.length > 30) diario = diario.slice(0, 30);
+    localStorage.setItem('eco_diario', JSON.stringify(diario));
+  } catch(e) {}
+}
+
+function mostrarDiario() {
+  try {
+    var diario = JSON.parse(localStorage.getItem('eco_diario') || '[]');
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(14,6,2,.95);z-index:100;overflow-y:auto;padding:3rem 2rem;';
+
+    var fechar = document.createElement('button');
+    fechar.textContent = '← voltar';
+    fechar.style.cssText = 'background:transparent;border:none;color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-bottom:2rem;padding:0;';
+    fechar.onclick = function(){ overlay.remove(); };
+    overlay.appendChild(fechar);
+
+    var titulo = document.createElement('div');
+    titulo.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:1.8rem;font-weight:300;font-style:italic;color:#C4956A;margin-bottom:.5rem;';
+    titulo.textContent = 'Diário de sessões';
+    overlay.appendChild(titulo);
+
+    var subtitulo = document.createElement('div');
+    subtitulo.style.cssText = 'font-family:monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.3);margin-bottom:3rem;';
+    subtitulo.textContent = 'suas últimas sessões com a Eco';
+    overlay.appendChild(subtitulo);
+
+    if (diario.length === 0) {
+      var vazio = document.createElement('p');
+      vazio.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:1rem;font-style:italic;color:rgba(242,232,217,.3);';
+      vazio.textContent = 'Nenhuma sessão registrada ainda.';
+      overlay.appendChild(vazio);
+    } else {
+      diario.forEach(function(sessao) {
+        var item = document.createElement('div');
+        item.style.cssText = 'margin-bottom:2rem;padding:1.4rem 1.6rem;background:rgba(242,232,217,.03);border-left:2px solid rgba(196,149,106,.25);';
+
+        var meta = document.createElement('div');
+        meta.style.cssText = 'font-family:monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,200,122,.35);margin-bottom:.8rem;';
+        meta.textContent = sessao.data + ' · ' + sessao.hora + (sessao.categoria !== 'geral' ? ' · ' + sessao.categoria : '');
+        item.appendChild(meta);
+
+        var txt = document.createElement('div');
+        txt.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:.95rem;font-style:italic;color:rgba(242,232,217,.45);line-height:1.8;';
+        txt.textContent = sessao.resumo;
+        item.appendChild(txt);
+
+        overlay.appendChild(item);
+      });
+    }
+
+    document.body.appendChild(overlay);
+  } catch(e) {}
+}
+
+// ── MODO SILÊNCIO ─────────────────────────────────────
+function toggleSilencio() {
+  var btn = document.getElementById('btn-silencio');
+  _modoSilencio = !_modoSilencio;
+  if (_modoSilencio) {
+    if (btn) { btn.textContent = 'Silêncio ativo'; btn.style.color = 'rgba(242,232,217,.6)'; btn.style.borderColor = 'rgba(242,232,217,.3)'; }
+    var aviso = document.createElement('div');
+    aviso.id = 'aviso-silencio';
+    aviso.style.cssText = 'text-align:center;padding:1rem;font-family:monospace;font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(242,232,217,.25);font-style:italic;margin-bottom:1rem;';
+    aviso.textContent = 'modo silêncio · a Eco responde após 5 minutos';
+    var dialogo = document.getElementById('dialogo');
+    if (dialogo) dialogo.parentNode.insertBefore(aviso, dialogo);
+  } else {
+    if (btn) { btn.textContent = 'Silêncio'; btn.style.color = 'rgba(242,232,217,.3)'; btn.style.borderColor = 'rgba(139,94,60,.3)'; }
+    var av = document.getElementById('aviso-silencio');
+    if (av) av.remove();
+    if (_silencioTimer) { clearTimeout(_silencioTimer); _silencioTimer = null; }
+  }
+}
+
+function processarModoSilencio(falaUsuario) {
+  _silencioFala = falaUsuario;
+  var contador = document.createElement('div');
+  contador.id = 'contador-silencio';
+  contador.style.cssText = 'text-align:center;padding:.8rem;font-family:monospace;font-size:.6rem;letter-spacing:.2em;color:rgba(232,200,122,.3);';
+  contador.textContent = '5:00';
+  document.getElementById('dialogo').appendChild(contador);
+
+  var restante = 300;
+  var intervalo = setInterval(function() {
+    restante--;
+    var m = Math.floor(restante / 60);
+    var s = restante % 60;
+    if (contador.parentNode) contador.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (restante <= 0) {
+      clearInterval(intervalo);
+      if (contador.parentNode) contador.remove();
+      // Eco responde agora
+      document.getElementById('ld').classList.add('ativo');
+      api(hist).then(function(resp) {
+        hist.push({ role: 'assistant', content: resp });
+        document.getElementById('ld').classList.remove('ativo');
+        adicionarFalaEco(resp);
+        document.getElementById('btn-r').disabled = false;
+        document.getElementById('ri').disabled = false;
+        document.getElementById('ri').focus();
+      }).catch(erro);
+    }
+  }, 1000);
+  _silencioTimer = intervalo;
+}
+
+function selCat(btn, c) {
+  var btns = document.querySelectorAll('.cat');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('ativo');
+  btn.classList.add('ativo');
+  cat = c;
+}
+
+// ── APRESENTAÇÃO ───────────────────────────────────────
+function iniciarSessao() {
+  var apres = document.getElementById('apres-input').value.replace(/^\s+|\s+$/g, '');
+  if (!apres) return;
+  if (jaFezSessaoHoje()) { mostrarBloqueio(); return; }
+  _apresentacao = apres;
+  document.getElementById('tela-apresentacao').style.display = 'none';
+  document.getElementById('tela-sessao').style.display = 'block';
+  iniciarTimer();
+  var prob = document.getElementById('problema');
+  if (prob) setTimeout(function(){ prob.focus(); }, 50);
+}
+
+// ── BLOCOS DE DIÁLOGO ──────────────────────────────────
+function criarBloco(quem, texto, corBorda, bgColor, corLabel, corTexto, italico) {
+  var d = document.getElementById('dialogo');
+  var bloco = document.createElement('div');
+  bloco.style.marginBottom = '1.5rem';
+  bloco.style.borderLeft = '2px solid ' + corBorda;
+  bloco.style.padding = '1.2rem 1.6rem';
+  bloco.style.background = bgColor;
+  var label = document.createElement('div');
+  label.style.fontFamily = 'monospace';
+  label.style.fontSize = '.5rem';
+  label.style.letterSpacing = '.22em';
+  label.style.textTransform = 'uppercase';
+  label.style.marginBottom = '.6rem';
+  label.style.color = corLabel;
+  label.textContent = quem;
+  bloco.appendChild(label);
+  var corpo = document.createElement('div');
+  corpo.style.fontSize = '1rem';
+  corpo.style.lineHeight = '1.85';
+  corpo.style.color = corTexto;
+  if (italico) corpo.style.fontStyle = 'italic';
+  var pars = texto.split('\n\n');
+  for (var i = 0; i < pars.length; i++) {
+    var txt = pars[i].replace(/^\s+|\s+$/g, '');
+    if (txt) {
+      var el = document.createElement('p');
+      el.style.marginBottom = '.9rem';
+      el.textContent = txt;
+      corpo.appendChild(el);
+    }
+  }
+  bloco.appendChild(corpo);
+  d.appendChild(bloco);
+  bloco.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function adicionarFalaEco(texto) {
+  criarBloco('Eco', texto, '#C4956A', '#F2E8D9', 'rgba(92,61,32,.45)', '#1A0E06', false);
+  falarEco(texto);
+  var sinais = ['por hoje e isso', 'ficamos aqui por hoje', 'ate aqui por hoje', 'por hoje \u00e9 isso'];
+  var textoMin = texto.toLowerCase();
+  for (var i = 0; i < sinais.length; i++) {
+    if (textoMin.indexOf(sinais[i]) !== -1) { mostrarOpcaoEncerramento(); break; }
+  }
+}
+
+function adicionarFalaUsuario(texto) {
+  criarBloco('voc\u00ea', texto, 'rgba(139,94,60,.25)', 'rgba(242,232,217,.04)', 'rgba(232,200,122,.3)', 'rgba(242,232,217,.5)', true);
+}
+
+// ── ENCERRAMENTO ───────────────────────────────────────
+function mostrarOpcaoEncerramento() {
+  if (document.getElementById('opcao-encerrar')) return;
+  clearInterval(_timerInterval);
+  var div = document.createElement('div');
+  div.id = 'opcao-encerrar';
+  div.style.cssText = 'margin-top:1.5rem;text-align:center;padding:1.2rem;border-top:1px solid rgba(139,94,60,.2);';
+  var lbl = document.createElement('div');
+  lbl.style.cssText = 'font-family:monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.4);margin-bottom:1rem;';
+  lbl.textContent = 'a sess\u00e3o chegou a um ponto de repouso';
+  div.appendChild(lbl);
+  var btnEnc = document.createElement('button');
+  btnEnc.textContent = 'Encerrar sess\u00e3o';
+  btnEnc.style.cssText = 'background:transparent;border:1px solid rgba(196,149,106,.4);color:rgba(196,149,106,.7);font-family:monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;padding:.7rem 1.8rem;cursor:pointer;margin-right:.8rem;';
+  btnEnc.onclick = encerrarSessao;
+  div.appendChild(btnEnc);
+  var btnCont = document.createElement('button');
+  btnCont.textContent = 'Continuar';
+  btnCont.style.cssText = 'background:transparent;border:1px solid rgba(139,94,60,.25);color:rgba(242,232,217,.3);font-family:monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;padding:.7rem 1.8rem;cursor:pointer;';
+  btnCont.onclick = continuarSessao;
+  div.appendChild(btnCont);
+  document.getElementById('dialogo').appendChild(div);
+  div.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function continuarSessao() {
+  var div = document.getElementById('opcao-encerrar');
+  if (div) div.remove();
+  if (_tempoRestante > 0) iniciarTimer();
+  document.getElementById('ri').focus();
+}
+
+function encerrarSessao() {
+  clearInterval(_timerInterval);
+  var div = document.getElementById('opcao-encerrar');
+  if (div) div.remove();
+  document.getElementById('re').classList.remove('vis');
+  registrarSessaoHoje();
+  gerarResumoFinal();
+}
+
+function gerarResumoFinal() {
+  var msgResumo = { role: 'user', content: 'Fa\u00e7a um resumo discreto desta sess\u00e3o em 3 a 5 linhas para retomar o fio na pr\u00f3xima vez. Terceira pessoa, anota\u00e7\u00e3o cl\u00ednica breve.' };
+  api(hist.concat([msgResumo])).then(function(resumo) {
+    mostrarResumo(resumo);
+  }).catch(function() {
+    mostrarResumo('Sess\u00e3o encerrada.');
+  });
+}
+
+var _resumoTexto = '';
+function mostrarResumo(texto) {
+  _resumoTexto = texto;
+  salvarSessaoNoDiario(texto);
+  var d = document.getElementById('dialogo');
+  var bloco = document.createElement('div');
+  bloco.style.cssText = 'margin-top:2rem;padding:1.4rem 1.8rem;background:rgba(242,232,217,.04);border:1px solid rgba(139,94,60,.2);';
+  var label = document.createElement('div');
+  label.style.cssText = 'font-family:monospace;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(232,200,122,.35);margin-bottom:.8rem;';
+  label.textContent = 'anota\u00e7\u00e3o da sess\u00e3o';
+  bloco.appendChild(label);
+  var corpo = document.createElement('div');
+  corpo.style.cssText = 'font-size:.9rem;line-height:1.8;color:rgba(242,232,217,.45);font-style:italic;';
+  corpo.textContent = texto;
+  bloco.appendChild(corpo);
+  var btn = document.createElement('button');
+  btn.textContent = 'Copiar para pr\u00f3xima sess\u00e3o';
+  btn.style.cssText = 'margin-top:1rem;display:block;background:transparent;border:1px solid rgba(139,94,60,.25);color:rgba(242,232,217,.3);font-family:monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem 1.2rem;cursor:pointer;';
+  btn.onclick = function() {
+    navigator.clipboard.writeText('CONTEXTO DA SESSAO ANTERIOR:\n\n' + _resumoTexto).then(function(){
+      btn.textContent = 'Copiado';
+    });
+  };
+  bloco.appendChild(btn);
+  d.appendChild(bloco);
+  bloco.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('nv').classList.add('vis');
+}
+
+// ── API ────────────────────────────────────────────────
+function api(msgs) {
+  // Em desenvolvimento local: chama a API diretamente
+  // Em produção (Netlify): chama a função segura
+  var endpoint = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+    ? 'https://api.anthropic.com/v1/messages'
+    : '/.netlify/functions/eco';
+
+  var payload = { model: 'claude-sonnet-4-6', max_tokens: 1000, system: SYS, messages: msgs };
+
+  var headers = { 'Content-Type': 'application/json' };
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(payload)
+  }).then(function(res) {
+    return res.json().then(function(d) {
+      if (!res.ok) throw new Error(d.error ? d.error.message : 'Erro');
+      return d.content.map(function(b){ return b.text || ''; }).join('');
+    });
+  });
+}
+
+// ── CONSULTAR / RESPONDER ──────────────────────────────
+function consultar() {
+  var p = document.getElementById('problema').value.replace(/^\s+|\s+$/g, '');
+  if (!p) return;
+  document.getElementById('btn-c').disabled = true;
+  document.getElementById('problema').disabled = true;
+  var intro = _apresentacao ? ('Apresentacao de quem fala: ' + _apresentacao + ' ') : '';
+  var tom = TONS[cat] ? (TONS[cat] + ' ') : '';
+  var cUser = intro + tom + p;
+  hist = [{ role: 'user', content: cUser }];
+  document.getElementById('ra').classList.add('vis');
+  document.getElementById('ld').classList.add('ativo');
+  document.getElementById('cw').style.display = 'block';
+  api(hist).then(function(r) {
+    hist.push({ role: 'assistant', content: r });
+    document.getElementById('ld').classList.remove('ativo');
+    adicionarFalaEco(r);
+    document.getElementById('re').classList.add('vis');
+    document.getElementById('ri').focus();
+  }).catch(erro);
+}
+
+function responder() {
+  var r = document.getElementById('ri').value.replace(/^\s+|\s+$/g, '');
+  if (!r) return;
+  document.getElementById('btn-r').disabled = true;
+  document.getElementById('ri').disabled = true;
+  adicionarFalaUsuario(r);
+  hist.push({ role: 'user', content: r });
+  document.getElementById('ri').value = '';
+  // Modo silêncio — aguardar 5 minutos antes de responder
+  if (_modoSilencio) {
+    processarModoSilencio(r);
+    return;
+  }
+  document.getElementById('ld').classList.add('ativo');
+  api(hist).then(function(resp) {
+    hist.push({ role: 'assistant', content: resp });
+    document.getElementById('ld').classList.remove('ativo');
+    adicionarFalaEco(resp);
+    document.getElementById('btn-r').disabled = false;
+    document.getElementById('ri').disabled = false;
+    document.getElementById('ri').focus();
+  }).catch(erro);
+}
+
+function erro() {
+  document.getElementById('ld').classList.remove('ativo');
+  var e = document.getElementById('er');
+  e.textContent = 'Eco est\u00e1 momentaneamente indispon\u00edvel. At\u00e9 ela tem seus impasses.';
+  e.classList.add('vis');
+  document.getElementById('nv').classList.add('vis');
+}
+
+function reiniciar() {
+  clearInterval(_timerInterval);
+  if (_sintetizador) _sintetizador.cancel();
+  hist = []; cat = ''; _resumoTexto = ''; _apresentacao = ''; _tempoRestante = 50*60; if (_somAtivo) toggleSom(); if (_modoSilencio) toggleSilencio(); if (_silencioTimer) clearTimeout(_silencioTimer);
+  var btns = document.querySelectorAll('.cat');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('ativo');
+  document.querySelector('.cat').classList.add('ativo');
+  document.getElementById('problema').value = '';
+  document.getElementById('problema').disabled = false;
+  document.getElementById('ri').value = '';
+  document.getElementById('ri').disabled = false;
+  document.getElementById('btn-c').disabled = false;
+  document.getElementById('btn-r').disabled = false;
+  document.getElementById('re').classList.remove('vis');
+  document.getElementById('cw').style.display = 'none';
+  document.getElementById('dialogo').innerHTML = '';
+  document.getElementById('er').classList.remove('vis');
+  document.getElementById('nv').classList.remove('vis');
+  document.getElementById('ra').classList.remove('vis');
+  document.getElementById('ld').classList.remove('ativo');
+  document.getElementById('tela-apresentacao').style.display = 'flex';
+  document.getElementById('tela-sessao').style.display = 'none';
+  document.getElementById('apres-input').value = '';
+  document.getElementById('apres-input').focus();
+}
+
+// Reset automático para ambiente de desenvolvimento
+// Remover esta linha antes de publicar para usuários
+try { localStorage.removeItem('eco_ultima_sessao'); } catch(e) {}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && e.ctrlKey) {
+    var telaApres = document.getElementById('tela-apresentacao');
+    if (telaApres && telaApres.style.display !== 'none') { iniciarSessao(); }
+    else if (document.getElementById('re').classList.contains('vis')) { responder(); }
+    else { consultar(); }
+  }
+});
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "Escutório — Eco",
+  "short_name": "Escutório",
+  "description": "Uma presença de escuta. Para o que você precisa dizer. E precisa ouvir.",
+  "start_url": "/escutorio_apresentacao.html",
+  "display": "standalone",
+  "background_color": "#1E0E06",
+  "theme_color": "#1E0E06",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
