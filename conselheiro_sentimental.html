@@ -714,8 +714,24 @@ function iniciarSessao() {
   document.getElementById('tela-apresentacao').style.display = 'none';
   document.getElementById('tela-sessao').style.display = 'block';
   iniciarTimer();
-  var prob = document.getElementById('problema');
-  if (prob) setTimeout(function(){ prob.focus(); }, 50);
+
+  // Ritual de abertura — chamada separada da API só com a apresentação
+  document.getElementById('ra').classList.add('vis');
+  document.getElementById('ld').classList.add('ativo');
+  document.getElementById('cw').style.display = 'block';
+  var msgApresentacao = { role: 'user', content: 'Esta e minha apresentacao, ainda nao e a queixa: ' + apres };
+  hist = [msgApresentacao];
+  api(hist).then(function(r) {
+    hist.push({ role: 'assistant', content: r });
+    document.getElementById('ld').classList.remove('ativo');
+    adicionarFalaEco(r);
+    var prob = document.getElementById('problema');
+    if (prob) setTimeout(function(){ prob.focus(); }, 50);
+  }).catch(function() {
+    document.getElementById('ld').classList.remove('ativo');
+    var prob = document.getElementById('problema');
+    if (prob) setTimeout(function(){ prob.focus(); }, 50);
+  });
 }
 
 // ── BLOCOS DE DIÁLOGO ──────────────────────────────────
@@ -878,13 +894,11 @@ function consultar() {
   if (!p) return;
   document.getElementById('btn-c').disabled = true;
   document.getElementById('problema').disabled = true;
-  var intro = _apresentacao ? ('Apresentacao de quem fala: ' + _apresentacao + ' ') : '';
   var tom = TONS[cat] ? (TONS[cat] + ' ') : '';
-  var cUser = intro + tom + p;
-  hist = [{ role: 'user', content: cUser }];
-  document.getElementById('ra').classList.add('vis');
+  var cUser = tom + p;
+  adicionarFalaUsuario(p);
+  hist.push({ role: 'user', content: cUser });
   document.getElementById('ld').classList.add('ativo');
-  document.getElementById('cw').style.display = 'block';
   api(hist).then(function(r) {
     hist.push({ role: 'assistant', content: r });
     document.getElementById('ld').classList.remove('ativo');
