@@ -204,14 +204,7 @@
       <button class="cat" onclick="selCat(this,'existencia')">Existência</button>
       <button class="cat" onclick="selCat(this,'luto')">Luto</button>
     </div>
-        <div id="bloco-queixa" style="display:none;">
-      <label class="campo-label" for="problema">sua queixa</label>
-      <textarea id="problema" placeholder="Diga o que te trouxe até aqui." rows="5"></textarea>
-      <div class="btn-wrap">
-        <button class="btn-p" id="btn-c" onclick="consultar()">Consultar</button>
-      </div>
-    </div>
-    <div class="resp-area" id="ra">
+        <div class="resp-area" id="ra">
       <div class="loading" id="ld">
         <div class="dots"><span></span><span></span><span></span></div>
         <div class="load-txt">Eco está ouvindo o que você não disse</div>
@@ -228,6 +221,13 @@
       </div>
       <div class="erro" id="er"></div>
       <div class="nova" id="nv"><button class="btn-s" onclick="reiniciar()">Nova sessão</button></div>
+    </div>
+    <div id="bloco-queixa" style="display:none;">
+      <label class="campo-label" for="problema">sua queixa</label>
+      <textarea id="problema" placeholder="Diga o que te trouxe até aqui." rows="5"></textarea>
+      <div class="btn-wrap">
+        <button class="btn-p" id="btn-c" onclick="consultar()">Consultar</button>
+      </div>
     </div>
     </div><!-- /tela-sessao -->
 
