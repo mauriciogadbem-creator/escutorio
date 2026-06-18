@@ -204,10 +204,12 @@
       <button class="cat" onclick="selCat(this,'existencia')">Existência</button>
       <button class="cat" onclick="selCat(this,'luto')">Luto</button>
     </div>
-        <label class="campo-label" for="problema">sua queixa</label>
-    <textarea id="problema" placeholder="Diga o que te trouxe até aqui." rows="5"></textarea>
-    <div class="btn-wrap">
-      <button class="btn-p" id="btn-c" onclick="consultar()">Consultar</button>
+        <div id="bloco-queixa" style="display:none;">
+      <label class="campo-label" for="problema">sua queixa</label>
+      <textarea id="problema" placeholder="Diga o que te trouxe até aqui." rows="5"></textarea>
+      <div class="btn-wrap">
+        <button class="btn-p" id="btn-c" onclick="consultar()">Consultar</button>
+      </div>
     </div>
     <div class="resp-area" id="ra">
       <div class="loading" id="ld">
@@ -725,10 +727,12 @@ function iniciarSessao() {
     hist.push({ role: 'assistant', content: r });
     document.getElementById('ld').classList.remove('ativo');
     adicionarFalaEco(r);
+    document.getElementById('bloco-queixa').style.display = 'block';
     var prob = document.getElementById('problema');
     if (prob) setTimeout(function(){ prob.focus(); }, 50);
   }).catch(function() {
     document.getElementById('ld').classList.remove('ativo');
+    document.getElementById('bloco-queixa').style.display = 'block';
     var prob = document.getElementById('problema');
     if (prob) setTimeout(function(){ prob.focus(); }, 50);
   });
