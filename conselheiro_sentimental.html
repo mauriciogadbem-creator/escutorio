@@ -898,6 +898,7 @@ function consultar() {
   if (!p) return;
   document.getElementById('btn-c').disabled = true;
   document.getElementById('problema').disabled = true;
+  document.getElementById('bloco-queixa').style.display = 'none';
   var tom = TONS[cat] ? (TONS[cat] + ' ') : '';
   var cUser = tom + p;
   adicionarFalaUsuario(p);
