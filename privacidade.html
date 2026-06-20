@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacidade e Termos — Escutório</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1E0E06">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Escutório">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --mogno: #1E0E06;
+  --couro-cl: #C4956A;
+  --creme: #F2E8D9;
+  --luz: #E8C87A;
+  --suave: rgba(242,232,217,.42);
+}
+
+body {
+  background: var(--mogno);
+  color: var(--creme);
+  font-family: 'Cormorant Garamond', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.luz-ambiente {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 40% 50%, rgba(232,200,122,.04) 0%, transparent 55%);
+}
+
+.pagina {
+  position: relative; z-index: 1;
+  max-width: 640px; margin: 0 auto;
+  padding: 5rem 2rem 7rem;
+}
+
+.voltar {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .52rem; letter-spacing: .2em;
+  text-transform: uppercase; color: rgba(242,232,217,.2);
+  text-decoration: none; display: inline-block;
+  margin-bottom: 3rem; transition: color .3s;
+}
+.voltar:hover { color: rgba(242,232,217,.5); }
+
+.titulo {
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+  font-weight: 300; line-height: 1.1;
+  color: var(--creme); margin-bottom: .5rem;
+}
+.titulo em { font-style: italic; color: var(--couro-cl); }
+
+.data {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .52rem; letter-spacing: .22em;
+  text-transform: uppercase; color: rgba(232,200,122,.25);
+  margin-bottom: 4rem;
+}
+
+.secao {
+  border-top: 1px solid rgba(139,94,60,.15);
+  padding: 2.8rem 0;
+}
+
+.secao-titulo {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .56rem; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--couro-cl);
+  opacity: .65; margin-bottom: 1.4rem;
+}
+
+.secao-corpo {
+  font-size: 1rem; font-weight: 300;
+  color: var(--suave); line-height: 1.95;
+}
+
+.secao-corpo p { margin-bottom: 1.1rem; }
+.secao-corpo p:last-child { margin-bottom: 0; }
+.secao-corpo em { font-style: italic; color: rgba(242,232,217,.65); }
+.secao-corpo strong { font-weight: 400; color: rgba(242,232,217,.7); }
+
+.aviso-clinico {
+  margin-top: 1.2rem;
+  padding: 1.2rem 1.4rem;
+  border-left: 2px solid rgba(196,149,106,.3);
+  background: rgba(242,232,217,.03);
+}
+
+.aviso-clinico p {
+  font-size: .95rem; font-style: italic;
+  color: rgba(242,232,217,.38); line-height: 1.8;
+  margin: 0;
+}
+
+.rodape {
+  border-top: 1px solid rgba(139,94,60,.15);
+  padding-top: 2.5rem;
+  margin-top: 1rem;
+}
+
+.rodape-txt {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .5rem; letter-spacing: .18em;
+  text-transform: uppercase; color: rgba(242,232,217,.18);
+  line-height: 1.9;
+}
+
+@media (max-width: 480px) {
+  .pagina { padding: 3rem 1.2rem 5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="luz-ambiente"></div>
+
+<div class="pagina">
+  <a class="voltar" href="escutorio_apresentacao.html">← voltar</a>
+
+  <h1 class="titulo">Privacidade e <em>Termos</em></h1>
+  <div class="data">Vigência a partir de junho de 2025</div>
+
+  <!-- 1 -->
+  <div class="secao">
+    <div class="secao-titulo">01 · O que é o Escutório</div>
+    <div class="secao-corpo">
+      <p>O Escutório é um serviço digital de escuta mediada por inteligência artificial, curado por Maurício Miguel Gadbem, médico psiquiatra e psicanalista (CRM/MG 21.367 · RQE 14146), com sede em Três Corações, MG.</p>
+      <p>A persona Eco realiza sessões de escuta de até 50 minutos, uma por dia, orientadas por abordagem psicanalítica. <em>O Escutório não é um serviço de saúde, não realiza diagnósticos, não prescreve tratamentos e não substitui acompanhamento psicológico ou psiquiátrico.</em></p>
+      <div class="aviso-clinico">
+        <p>Em situações de risco à vida ou crise aguda, procure imediatamente o CVV (188, disponível 24h) ou dirija-se à UPA ou ao SAMU (192) mais próximos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="secao">
+    <div class="secao-titulo">02 · Dados que coletamos</div>
+    <div class="secao-corpo">
+      <p>O Escutório foi desenhado para coletar o mínimo possível.</p>
+      <p><strong>Dados que ficam apenas no seu dispositivo (localStorage):</strong> o histórico de sessões e os resumos gerados pela Eco são armazenados localmente no seu navegador. Não temos acesso a esse conteúdo e ele não é transmitido para nenhum servidor nosso.</p>
+      <p><strong>Dados processados em trânsito:</strong> o texto das suas mensagens é enviado à API da Anthropic (empresa norte-americana que fornece o modelo de inteligência artificial) para geração das respostas da Eco. Esse trânsito ocorre de forma criptografada. A Anthropic possui sua própria política de privacidade, disponível em anthropic.com/privacy.</p>
+      <p><strong>Dados de pagamento:</strong> a assinatura é processada pela plataforma Kiwify. Não temos acesso aos seus dados de cartão ou informações financeiras. Consulte a política da Kiwify em kiwify.com.br.</p>
+      <p><strong>Não coletamos:</strong> nome, e-mail, localização, dados de saúde, informações cadastrais ou qualquer dado de identificação pessoal dentro do app.</p>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="secao">
+    <div class="secao-titulo">03 · Como usamos os dados</div>
+    <div class="secao-corpo">
+      <p>As mensagens trocadas com a Eco são usadas exclusivamente para gerar as respostas dentro da sessão. Não as armazenamos, não as lemos, não as usamos para treinar modelos.</p>
+      <p>Os resumos de sessão gerados pela Eco ficam no seu dispositivo e servem apenas para que a Eco possa retomar o contexto na sessão seguinte — se você usar o mesmo navegador e dispositivo.</p>
+      <p>Não compartilhamos dados com terceiros além dos mencionados acima (Anthropic para processamento das mensagens, Kiwify para gestão da assinatura).</p>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="secao">
+    <div class="secao-titulo">04 · Seus direitos</div>
+    <div class="secao-corpo">
+      <p>Você pode apagar todos os dados locais do Escutório a qualquer momento limpando o armazenamento local do seu navegador (Configurações → Privacidade → Limpar dados de navegação).</p>
+      <p>Como não coletamos dados pessoais identificáveis em nossos servidores, não há cadastro a ser excluído ou portado. O cancelamento da assinatura pode ser feito diretamente na plataforma Kiwify.</p>
+      <p>Em caso de dúvidas sobre privacidade, entre em contato pelo e-mail do curador disponível na plataforma de assinatura.</p>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="secao">
+    <div class="secao-titulo">05 · Termos de uso</div>
+    <div class="secao-corpo">
+      <p><strong>Acesso:</strong> o Escutório é um serviço por assinatura mensal. O acesso é pessoal e intransferível. Uma sessão por dia por assinante.</p>
+      <p><strong>Uso adequado:</strong> o serviço destina-se a adultos em busca de escuta e reflexão. Não deve ser usado como substituto de atendimento de saúde mental, especialmente em situações de crise, risco de vida, uso intensivo de substâncias ou quadros psiquiátricos agudos.</p>
+      <p><strong>Limitações da Eco:</strong> a Eco é uma persona de inteligência artificial. Não é uma psicóloga, não é uma psicanalista, não tem registro profissional. Pode cometer erros, pode não captar nuances, pode ter limitações que uma presença humana não teria. O curador humano por trás do serviço define os limites e orienta o comportamento da Eco, mas não monitora as sessões individualmente.</p>
+      <p><strong>Cancelamento:</strong> você pode cancelar sua assinatura a qualquer momento. Não há fidelidade mínima. Após o cancelamento, o acesso permanece ativo até o fim do período pago.</p>
+      <p><strong>Alterações:</strong> estes termos podem ser atualizados. Mudanças relevantes serão comunicadas com antecedência mínima de 15 dias.</p>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="secao">
+    <div class="secao-titulo">06 · Menores de idade</div>
+    <div class="secao-corpo">
+      <p>O Escutório não é destinado a menores de 18 anos. Ao utilizar o serviço, você declara ter 18 anos ou mais.</p>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="secao">
+    <div class="secao-titulo">07 · Legislação aplicável</div>
+    <div class="secao-corpo">
+      <p>Este serviço está sujeito à Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD) e ao Código de Defesa do Consumidor (Lei nº 8.078/1990). O foro competente para eventuais disputas é o da comarca de Três Corações, MG.</p>
+    </div>
+  </div>
+
+  <div class="rodape">
+    <div class="rodape-txt">
+      Escutório · Curadoria: Maurício Miguel Gadbem · CRM/MG 21.367 · RQE 14146<br>
+      Três Corações, MG · Brasil
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
