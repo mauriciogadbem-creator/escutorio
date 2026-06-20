@@ -844,13 +844,29 @@ function iniciarSessao() {
   document.getElementById('tela-sessao').style.display = 'block';
   iniciarTimer();
 
+  // Carregar memória de sessões anteriores
+  var memoriaContexto = '';
+  try {
+    var diario = JSON.parse(localStorage.getItem('eco_diario') || '[]');
+    if (diario.length > 0) {
+      // Pegar os últimos 3 resumos — suficiente para contexto sem sobrecarregar
+      var resumos = diario.slice(0, 3).map(function(s, i) {
+        return 'Sessão ' + (i === 0 ? 'anterior' : (i + 1) + ' sessões atrás') + ' (' + s.data + '): ' + s.resumo;
+      }).join('\n\n');
+      memoriaContexto = '\n\nCONTEXTO DAS SESSÕES ANTERIORES COM ESTA PESSOA — use para continuar o fio, reconhecer referências já feitas, e não pedir informações já dadas:\n\n' + resumos + '\n\nFim do contexto. A sessão de hoje começa agora com a apresentação abaixo.';
+    }
+  } catch(e) {}
+
   // Ritual de abertura — chamada separada da API só com a apresentação
   document.getElementById('ra').classList.add('vis');
   document.getElementById('ld').classList.add('ativo');
   document.getElementById('cw').style.display = 'block';
   var msgApresentacao = { role: 'user', content: 'Esta e minha apresentacao, ainda nao e a queixa: ' + apres };
   hist = [msgApresentacao];
-  api(hist).then(function(r) {
+  // Injetar memória no system prompt desta sessão
+  var sysComMemoria = SYS + memoriaContexto;
+  _sysAtual = sysComMemoria;
+  api(hist, sysComMemoria).then(function(r) {
     hist.push({ role: 'assistant', content: r });
     document.getElementById('ld').classList.remove('ativo');
     adicionarFalaEco(r);
@@ -1092,14 +1108,16 @@ function mostrarResumo(texto) {
 }
 
 // ── API ────────────────────────────────────────────────
-function api(msgs) {
-  // Em desenvolvimento local: chama a API diretamente
-  // Em produção (Netlify): chama a função segura
+// System prompt da sessão atual (pode incluir memória de sessões anteriores)
+var _sysAtual = SYS;
+
+function api(msgs, sysOverride) {
   var endpoint = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
     ? 'https://api.anthropic.com/v1/messages'
     : '/.netlify/functions/eco';
 
-  var payload = { model: 'claude-sonnet-4-6', max_tokens: 1000, system: SYS, messages: msgs };
+  var sysUsado = sysOverride || _sysAtual;
+  var payload = { model: 'claude-sonnet-4-6', max_tokens: 1000, system: sysUsado, messages: msgs };
 
   var headers = { 'Content-Type': 'application/json' };
 
@@ -1175,7 +1193,7 @@ function erro() {
 function reiniciar() {
   clearInterval(_timerInterval);
   if (_sintetizador) _sintetizador.cancel();
-  hist = []; cat = ''; _resumoTexto = ''; _apresentacao = ''; _tempoRestante = 50*60; if (_somAtivo) toggleSom(); if (_modoSilencio) toggleSilencio(); if (_silencioTimer) clearTimeout(_silencioTimer);
+  hist = []; cat = ''; _resumoTexto = ''; _apresentacao = ''; _tempoRestante = 50*60; _sysAtual = SYS; if (_somAtivo) toggleSom(); if (_modoSilencio) toggleSilencio(); if (_silencioTimer) clearTimeout(_silencioTimer);
   var btns = document.querySelectorAll('.cat');
   for (var i = 0; i < btns.length; i++) btns[i].classList.remove('ativo');
   document.querySelector('.cat').classList.add('ativo');
@@ -1197,10 +1215,6 @@ function reiniciar() {
   document.getElementById('apres-input').value = '';
   document.getElementById('apres-input').focus();
 }
-
-// Reset automático para ambiente de desenvolvimento
-// Remover esta linha antes de publicar para usuários
-try { localStorage.removeItem('eco_ultima_sessao'); } catch(e) {}
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && e.ctrlKey) {
