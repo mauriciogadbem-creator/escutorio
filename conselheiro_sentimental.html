@@ -211,7 +211,7 @@
         <div class="resp-area" id="ra">
       <div class="loading" id="ld">
         <div class="dots"><span></span><span></span><span></span></div>
-        <div class="load-txt">Eco está ouvindo o que você não disse</div>
+        
       </div>
       <div id="cw" style="display:none">
         <div class="sep"><div class="sep-l"></div><div class="sep-t">Eco</div><div class="sep-l"></div></div>
@@ -980,6 +980,37 @@ function encerrarSessao() {
   gerarResumoFinal();
 }
 
+function encerrarSessaoUsuario() {
+  // Desativar microfone se ativo
+  if (_micAtivo) { toggleMic(_micAlvo, 'mic-' + (_micAlvo === 'problema' ? 'prob' : _micAlvo === 'ri' ? 'ri' : 'apres')); }
+  clearInterval(_timerInterval);
+  // Esconder campo continuar e dica
+  document.getElementById('re').classList.remove('vis');
+  var dica = document.getElementById('dica-encerramento');
+  if (dica) dica.style.display = 'none';
+  // Desabilitar botão para evitar duplo clique
+  var btn = document.getElementById('btn-encerrar');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.2'; }
+  // Pedir frase de encerramento à Eco
+  if (hist.length > 1) {
+    document.getElementById('ld').classList.add('ativo');
+    var msgFim = { role: 'user', content: 'O usuário encerrou a sessão. Faça uma frase breve de encerramento, como faria ao fim de uma sessão analítica.' };
+    api(hist.concat([msgFim])).then(function(r) {
+      document.getElementById('ld').classList.remove('ativo');
+      adicionarFalaEco(r);
+      registrarSessaoHoje();
+      setTimeout(function(){ gerarResumoFinal(); }, 1500);
+    }).catch(function() {
+      document.getElementById('ld').classList.remove('ativo');
+      registrarSessaoHoje();
+      gerarResumoFinal();
+    });
+  } else {
+    registrarSessaoHoje();
+    gerarResumoFinal();
+  }
+}
+
 function gerarResumoFinal() {
   var msgResumo = { role: 'user', content: 'Fa\u00e7a um resumo discreto desta sess\u00e3o em 3 a 5 linhas para retomar o fio na pr\u00f3xima vez. Terceira pessoa, anota\u00e7\u00e3o cl\u00ednica breve.' };
   api(hist.concat([msgResumo])).then(function(resumo) {
@@ -1050,6 +1081,8 @@ function consultar() {
   document.getElementById('btn-c').disabled = true;
   document.getElementById('problema').disabled = true;
   document.getElementById('bloco-queixa').style.display = 'none';
+  var dica = document.getElementById('dica-encerramento');
+  if (dica) dica.style.display = 'none';
   var tom = TONS[cat] ? (TONS[cat] + ' ') : '';
   var cUser = tom + p;
   adicionarFalaUsuario(p);
