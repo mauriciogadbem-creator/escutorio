@@ -578,7 +578,7 @@ function atualizarMicBtn(btnId, ativo) {
 }
 
 function falarEco(texto) {
-  if (!_vozAtiva || !_sintetizador) return;
+  if (!_sintetizador) return;
   _sintetizador.cancel();
   var utt = new SpeechSynthesisUtterance(texto);
   utt.lang = 'pt-BR';
@@ -1046,6 +1046,7 @@ function api(msgs) {
 function consultar() {
   var p = document.getElementById('problema').value.replace(/^\s+|\s+$/g, '');
   if (!p) return;
+  if (_micAtivo) { toggleMic(_micAlvo, 'mic-' + (_micAlvo === 'problema' ? 'prob' : _micAlvo === 'ri' ? 'ri' : 'apres')); }
   document.getElementById('btn-c').disabled = true;
   document.getElementById('problema').disabled = true;
   document.getElementById('bloco-queixa').style.display = 'none';
@@ -1066,6 +1067,7 @@ function consultar() {
 function responder() {
   var r = document.getElementById('ri').value.replace(/^\s+|\s+$/g, '');
   if (!r) return;
+  if (_micAtivo) { toggleMic(_micAlvo, 'mic-' + (_micAlvo === 'problema' ? 'prob' : _micAlvo === 'ri' ? 'ri' : 'apres')); }
   document.getElementById('btn-r').disabled = true;
   document.getElementById('ri').disabled = true;
   adicionarFalaUsuario(r);
