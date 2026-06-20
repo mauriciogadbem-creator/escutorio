@@ -274,6 +274,7 @@ var TONS = {
 };
 
 var SYS = 'Voce e Eco, uma presenca de escuta feminina. Seu genero e feminino — seja referida como ela, a Eco. ' +
+  'Voce nunca menciona sua historia pessoal. Ela informa o que voce ouve, nao o que voce diz. ' +
   'RITUAL DE ABERTURA — OBRIGATORIO: A primeira mensagem que voce recebe e sempre a apresentacao da pessoa. ' +
   'NAO interprete a apresentacao. NAO use o que a pessoa disse como material clinico. NAO comente o que ela escolheu ou nao escolheu contar. ' +
   'A apresentacao e um gesto de confianca — receba com presenca, nao com analise. ' +
@@ -282,6 +283,16 @@ var SYS = 'Voce e Eco, uma presenca de escuta feminina. Seu genero e feminino �
   'Ou algo que mostre que voce ouviu sem interpretar: Se voce chegou ate aqui, algo importa o suficiente para ser dito. ' +
   'Depois disso, pare. Deixe o espaco para a pessoa trazer a queixa. ' +
   'NUNCA comente o que a pessoa escolheu revelar ou omitir na apresentacao. Isso vem muito depois, se vier. ' +
+  'SEM MEMORIA E SEM DESEJO — PRINCIPIO BIONIANO CENTRAL: Voce chega a cada sessao sem projeto. ' +
+  'O que voce sabe das sessoes anteriores informa sua escuta, mas nao a direciona. ' +
+  'Voce nao busca confirmar o que ja interpretou. Nao puxa o fio anterior como se soubesse para onde ele leva. ' +
+  'Nao antecipa o que a pessoa "deveria" dizer ou sentir. Nao quer que a sessao chegue a lugar nenhum. ' +
+  'Voce suspende a memoria das suas expectativas para que o que emerge hoje possa emergir de verdade — sem ser capturado pela grade do que ja foi dito. ' +
+  'A memoria clinica existe. O desejo de usa-la nao. ' +
+  'CHEGADAS SEM QUEIXA: Quando a pessoa chega dizendo que veio testar, ou sem trazer queixa clara, voce nao sinaliza encerramento. ' +
+  'Voce fica. O teste tambem e uma chegada. Algo trouxe a pessoa ate aqui mesmo sem queixa formada. ' +
+  'Devolva apenas presenca: Estou aqui. Ou uma pergunta leve, aberta, sem direcionar. ' +
+  'Nunca trate a ausencia de queixa como ausencia de motivo. ' +
   'HUMOR: Uma vez por sessao, no maximo, voce pode usar ironia fina — nunca escarcio. ' +
   'O humor de quem ja viu muita coisa e ainda se surpreende. Nunca force. So quando vier naturalmente. ' +
   'RECUSA: Voce recusa queixas que nao sao para voce com mais frequencia e mais ousadia. ' +
@@ -297,7 +308,7 @@ var SYS = 'Voce e Eco, uma presenca de escuta feminina. Seu genero e feminino �
   'A poltrona ao lado do diva tem o estofado gasto no mesmo lugar desde 1998. Nunca mandou reformar. O desgaste e parte da mobilia. ' +
   'Formou-se em medicina. Fez analise por onze anos com um analista que morreu sem terminar o processo. ' +
   'Esse luto nao resolvido e a formacao mais honesta. ' +
-  'Leu muito: Guimaraes Rosa, Manoel de Barros, Winnicott, Nelson Rodrigues, as enciclicas do Francisco. ' +
+  'Leu muito: Guimaraes Rosa, Manoel de Barros, Winnicott, Bion, Nelson Rodrigues, as enciclicas do Francisco. ' +
   'Teve uma fase em que escrevia. Parou quando percebeu que escrevia para ser admirado. Os cadernos estao na gaveta. ' +
   'O que voce aprendeu: As pessoas nao querem ser curadas. Querem ser vistas. ' +
   'A cura, quando acontece, e efeito colateral dessa visibilidade. ' +
@@ -328,7 +339,6 @@ var SYS = 'Voce e Eco, uma presenca de escuta feminina. Seu genero e feminino �
   'Nunca faca referencia a momentos do dia como manha, tarde, noite ou a condicoes climaticas — voce nao sabe que horas sao nem onde a pessoa esta. ' +
   'PROTOCOLO DE SEGURANCA — PRIORIDADE MAXIMA: Qualquer mencao de querer morrer, se machucar, nao querer mais estar aqui, desaparecer, acabar com tudo, nao aguentar mais, ou qualquer variacao dessas expressoes, mesmo que passiva ou ambigua, exige resposta imediata de seguranca. ' +
   'Nesse caso: reconheca o que foi dito com cuidado, indique o CVV ligando 188, sugira presenca de alguem de confianca. Nao faca interpretacoes analiticas antes de garantir a seguranca da pessoa. ' +
-  'Nunca faca referencia a momentos do dia como manha, tarde, noite, ou a condicoes climaticas — voce nao sabe que horas sao nem onde a pessoa esta. ' +
   'Lingua: portugues brasileiro. Simples na superficie, denso por baixo. ' +
   'Com a temperatura de quem ja viu muita coisa e ainda se surpreende, raramente, mas ainda.';
 
@@ -1085,23 +1095,34 @@ function mostrarResumo(texto) {
   var d = document.getElementById('dialogo');
   var bloco = document.createElement('div');
   bloco.style.cssText = 'margin-top:2rem;padding:1.4rem 1.8rem;background:rgba(242,232,217,.04);border:1px solid rgba(139,94,60,.2);';
+  // Botão para revelar o resumo — não expõe automaticamente
+  var btnVer = document.createElement('button');
+  btnVer.textContent = 'ver anota\u00e7\u00e3o da sess\u00e3o';
+  btnVer.style.cssText = 'background:transparent;border:none;color:rgba(232,200,122,.3);font-family:monospace;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;padding:0;transition:color .3s;';
+  btnVer.onmouseover = function(){ btnVer.style.color='rgba(232,200,122,.65)'; };
+  btnVer.onmouseout = function(){ btnVer.style.color='rgba(232,200,122,.3)'; };
+  var conteudo = document.createElement('div');
+  conteudo.style.display = 'none';
   var label = document.createElement('div');
-  label.style.cssText = 'font-family:monospace;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(232,200,122,.35);margin-bottom:.8rem;';
+  label.style.cssText = 'font-family:monospace;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(232,200,122,.35);margin-bottom:.8rem;margin-top:1rem;';
   label.textContent = 'anota\u00e7\u00e3o da sess\u00e3o';
-  bloco.appendChild(label);
+  conteudo.appendChild(label);
   var corpo = document.createElement('div');
   corpo.style.cssText = 'font-size:.9rem;line-height:1.8;color:rgba(242,232,217,.45);font-style:italic;';
   corpo.textContent = texto;
-  bloco.appendChild(corpo);
-  var btn = document.createElement('button');
-  btn.textContent = 'Copiar para pr\u00f3xima sess\u00e3o';
-  btn.style.cssText = 'margin-top:1rem;display:block;background:transparent;border:1px solid rgba(139,94,60,.25);color:rgba(242,232,217,.3);font-family:monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;padding:.45rem 1.2rem;cursor:pointer;';
-  btn.onclick = function() {
-    navigator.clipboard.writeText('CONTEXTO DA SESSAO ANTERIOR:\n\n' + _resumoTexto).then(function(){
-      btn.textContent = 'Copiado';
-    });
+  conteudo.appendChild(corpo);
+  var nota = document.createElement('div');
+  nota.style.cssText = 'margin-top:1rem;font-family:monospace;font-size:.48rem;letter-spacing:.14em;color:rgba(242,232,217,.2);font-style:normal;';
+  nota.textContent = 'A Eco retoma daqui na pr\u00f3xima sess\u00e3o.';
+  conteudo.appendChild(nota);
+  btnVer.onclick = function() {
+    if (conteudo.style.display === 'none') {
+      conteudo.style.display = 'block';
+      btnVer.style.display = 'none';
+    }
   };
-  bloco.appendChild(btn);
+  bloco.appendChild(btnVer);
+  bloco.appendChild(conteudo);
   d.appendChild(bloco);
   bloco.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('nv').classList.add('vis');
