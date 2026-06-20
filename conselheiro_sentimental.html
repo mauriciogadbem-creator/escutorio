@@ -196,9 +196,11 @@
       <div style="display:flex;gap:.6rem;">
         <button id="btn-silencio" onclick="toggleSilencio()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;">Silêncio</button>
         <button id="btn-som" onclick="toggleSom()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;">Som</button>
-
+        <button id="btn-voz-eco" onclick="toggleVozEco()" style="background:transparent;border:1px solid rgba(139,94,60,.3);color:rgba(242,232,217,.3);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;">Voz</button>
+        <button id="btn-encerrar" onclick="encerrarSessaoUsuario()" style="background:transparent;border:1px solid rgba(196,149,106,.35);color:rgba(196,149,106,.55);font-family:monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:all .3s;" onmouseover="this.style.color='rgba(196,149,106,.9)';this.style.borderColor='rgba(196,149,106,.7)'" onmouseout="this.style.color='rgba(196,149,106,.55)';this.style.borderColor='rgba(196,149,106,.35)'">Encerrar</button>
       </div>
     </div>
+    <div id="dica-encerramento" style="font-family:monospace;font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,232,217,.18);text-align:right;margin-bottom:1.2rem;">quando quiser encerrar, use o botão acima — a Eco registrará a sessão</div>
     <div class="cats">
       <button class="cat ativo" onclick="selCat(this,'')">Tudo</button>
       <button class="cat" onclick="selCat(this,'amor')">Amor</button>
@@ -259,6 +261,7 @@
 var cat='', hist=[], _resumoGuardado='', _apresentacao='', _audioCtx=null, _noiseNode=null, _gainNode=null, _somAtivo=false, _modoSilencio=false, _silencioTimer=null, _silencioFala='';
 var _timerInterval=null, _tempoRestante=50*60, _vozAtiva=false, _reconhecimento=null, _sintetizador=window.speechSynthesis;
 var _micAtivo=false, _micAlvo=null, _micRec=null;
+var _vozEcoAtiva=false;
 
 var TONS = {
   '': '',
@@ -488,6 +491,22 @@ function esconderAvisoVoz() {
 
 function atualizarBtnVoz() { /* botões globais de voz removidos — microfones inline */ }
 
+function toggleVozEco() {
+  _vozEcoAtiva = !_vozEcoAtiva;
+  var btn = document.getElementById('btn-voz-eco');
+  if (!btn) return;
+  if (_vozEcoAtiva) {
+    btn.style.color = 'rgba(232,200,122,.8)';
+    btn.style.borderColor = 'rgba(232,200,122,.5)';
+    btn.textContent = 'Voz ativa';
+  } else {
+    if (_sintetizador) _sintetizador.cancel();
+    btn.style.color = 'rgba(242,232,217,.3)';
+    btn.style.borderColor = 'rgba(139,94,60,.3)';
+    btn.textContent = 'Voz';
+  }
+}
+
 function pararReconhecimento() {
   if (_reconhecimento) { try { _reconhecimento.stop(); } catch(e) {} }
 }
@@ -578,7 +597,7 @@ function atualizarMicBtn(btnId, ativo) {
 }
 
 function falarEco(texto) {
-  if (!_sintetizador) return;
+  if (!_vozEcoAtiva || !_sintetizador) return;
   _sintetizador.cancel();
   var utt = new SpeechSynthesisUtterance(texto);
   utt.lang = 'pt-BR';
