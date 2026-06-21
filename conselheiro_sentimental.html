@@ -180,9 +180,7 @@
       <div style="display:flex;justify-content:flex-end;align-items:center;width:100%;margin-top:.5rem;">
         <button class="btn-p" onclick="iniciarSessao()">Entrar</button>
       </div>
-      <div id="aviso-voz" style="display:none;margin-top:.8rem;font-family:monospace;font-size:.5rem;letter-spacing:.12em;color:rgba(232,200,122,.4);font-style:italic;line-height:1.6;">
-        A voz estará disponível quando o Escutório estiver publicado.<br>Por enquanto, escreva.
-      </div>
+
     </div>
 
     <!-- TELA DE SESSÃO -->
@@ -221,7 +219,7 @@
       </div>
       <div class="resp-ent" id="re">
         <div style="position:relative;">
-          <textarea id="ri" placeholder="Continue..." rows="3" style="padding-right:2.8rem;"></textarea>
+          <textarea id="ri" placeholder="O que ficou..." rows="3" style="padding-right:2.8rem;"></textarea>
           <button id="mic-ri" onclick="toggleMic('ri','mic-ri')" title="Usar voz" style="position:absolute;right:.7rem;bottom:.7rem;background:transparent;border:none;cursor:pointer;padding:.3rem;opacity:.35;transition:opacity .3s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity=_micAtivo&&_micAlvo==='ri'?'1':'.35'">
             <svg id="mic-ri-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8C87A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
           </button>
@@ -234,7 +232,6 @@
       <div class="nova" id="nv"><p style="font-family:monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,232,217,.18);">até amanhã.</p></div>
     </div>
     <div id="bloco-queixa" style="display:none;">
-      <label class="campo-label" for="problema">sua queixa</label>
       <div style="position:relative;">
         <textarea id="problema" placeholder="Pode começar pelo que vier." rows="5" style="padding-right:2.8rem;"></textarea>
         <button id="mic-prob" onclick="toggleMic('problema','mic-prob')" title="Usar voz" style="position:absolute;right:.7rem;bottom:.7rem;background:transparent;border:none;cursor:pointer;padding:.3rem;opacity:.35;transition:opacity .3s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity=_micAtivo&&_micAlvo==='problema'?'1':'.35'">
@@ -251,7 +248,7 @@
   <!-- TELA DE BLOQUEIO DIÁRIO -->
   <div id="tela-bloqueio" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:40vh;text-align:center;padding:3rem 2rem;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.5);line-height:1.8;max-width:420px;margin-bottom:1.5rem;">
-      Você já teve sua sessão de hoje.<br>Eco estará aqui amanhã.
+      Por hoje, chegamos aqui.<br>A Eco estará aqui amanhã.
     </p>
     <p style="font-family:monospace;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.25);margin-bottom:2rem;">uma sessão por dia</p>
     <button onclick="resetarLimite()" style="background:transparent;border:none;color:rgba(242,232,217,.12);font-family:monospace;font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:.3rem .8rem;transition:color .3s;" onmouseover="this.style.color='rgba(242,232,217,.3)'" onmouseout="this.style.color='rgba(242,232,217,.12)'">modo teste</button>
@@ -767,7 +764,7 @@ function mostrarDiario() {
     if (diario.length === 0) {
       var vazio = document.createElement('p');
       vazio.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:1rem;font-style:italic;color:rgba(242,232,217,.3);';
-      vazio.textContent = 'Nenhuma sessão registrada ainda.';
+      vazio.textContent = 'Ainda não há sessões aqui. Quando houver, ficarão.';
       overlay.appendChild(vazio);
     } else {
       diario.forEach(function(sessao) {
@@ -1079,7 +1076,7 @@ function encerrarSessaoUsuario() {
   // Pedir frase de encerramento à Eco
   if (hist.length > 1) {
     document.getElementById('ld').classList.add('ativo');
-    var msgFim = { role: 'user', content: 'O usuário encerrou a sessão. Faça uma frase breve de encerramento, como faria ao fim de uma sessão analítica.' };
+    var msgFim = { role: 'user', content: 'O usuário encerrou. Uma frase de encerramento — breve, com a temperatura desta sessão específica.' };
     api(hist.concat([msgFim])).then(function(r) {
       document.getElementById('ld').classList.remove('ativo');
       adicionarFalaEco(r);
@@ -1097,7 +1094,7 @@ function encerrarSessaoUsuario() {
 }
 
 function gerarResumoFinal() {
-  var msgResumo = { role: 'user', content: 'Fa\u00e7a um resumo discreto desta sess\u00e3o em 3 a 5 linhas para retomar o fio na pr\u00f3xima vez. Terceira pessoa, anota\u00e7\u00e3o cl\u00ednica breve.' };
+  var msgResumo = { role: 'user', content: 'Faça uma anotação clínica desta sessão proporcional ao que aconteceu. Se a sessão foi mínima — poucas trocas, sem queixa desenvolvida — a nota deve ser breve, uma ou duas linhas. Se a sessão foi densa, pode ir até cinco linhas. Terceira pessoa. Sem forçar interpretação onde não houve material suficiente.' };
   api(hist.concat([msgResumo])).then(function(resumo) {
     mostrarResumo(resumo);
   }).catch(function() {
