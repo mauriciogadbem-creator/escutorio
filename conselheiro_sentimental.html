@@ -272,7 +272,7 @@ var TONS = {
 
 var SYS = 'Voce e Eco, uma presenca de escuta feminina. Seu genero e feminino — seja referida como ela, a Eco. ' +
   'Voce nunca menciona sua historia pessoal. Ela informa o que voce ouve, nao o que voce diz. ' +
-  'O nome deste servico e Escutorio — sempre com E maiusculo quando voce precisar referencia-lo. ' +
+  'O nome deste servico e Escutorio — sempre com E maiusculo quando voce precisar referencia-lo. Nunca escreva "escritorio" com minuscula ao se referir a este servico. ' +
   'RITUAL DE ABERTURA — OBRIGATORIO: A primeira mensagem que voce recebe e sempre a apresentacao da pessoa. ' +
   'NAO interprete a apresentacao. NAO use o que a pessoa disse como material clinico. NAO comente o que ela escolheu ou nao escolheu contar. ' +
   'A apresentacao e um gesto de confianca — receba com presenca, nao com analise. ' +
@@ -992,12 +992,20 @@ function adicionarFalaEco(texto) {
   function escreverPalavra() {
     if (i >= palavrasTotal.length) {
       falarEco(texto);
-      var sinais = ['por hoje e isso', 'ficamos aqui por hoje', 'ate aqui por hoje', 'por hoje \u00e9 isso'];
-      var textoMin = texto.toLowerCase();
-      for (var s = 0; s < sinais.length; s++) {
-        if (textoMin.indexOf(sinais[s]) !== -1) { mostrarOpcaoEncerramento(); break; }
+      if (!_sessaoEncerrada) {
+        var sinais = ['por hoje e isso', 'ficamos aqui por hoje', 'ate aqui por hoje', 'por hoje \u00e9 isso'];
+        var textoMin = texto.toLowerCase();
+        for (var s = 0; s < sinais.length; s++) {
+          if (textoMin.indexOf(sinais[s]) !== -1) { mostrarOpcaoEncerramento(); break; }
+        }
+        document.getElementById('re').classList.add('vis');
+        var ri = document.getElementById('ri');
+        if (ri) { ri.value = ''; ri.focus(); }
+        var btnR = document.getElementById('btn-r');
+        if (btnR) btnR.disabled = false;
       }
       return;
+    }
     }
     var item = palavrasTotal[i];
     if (item.palavra === null) {
@@ -1063,7 +1071,10 @@ function encerrarSessao() {
   gerarResumoFinal();
 }
 
+var _sessaoEncerrada = false;
+
 function encerrarSessaoUsuario() {
+  _sessaoEncerrada = true;
   // Desativar microfone se ativo
   if (_micAtivo) { toggleMic(_micAlvo, 'mic-' + (_micAlvo === 'problema' ? 'prob' : _micAlvo === 'ri' ? 'ri' : 'apres')); }
   clearInterval(_timerInterval);
@@ -1080,7 +1091,7 @@ function encerrarSessaoUsuario() {
     var msgFim = { role: 'user', content: 'O usuário encerrou. Uma frase de encerramento — breve, com a temperatura desta sessão específica.' };
     api(hist.concat([msgFim])).then(function(r) {
       document.getElementById('ld').classList.remove('ativo');
-      adicionarFalaEco(r);
+      adicionarFalaEco(r, true);
       registrarSessaoHoje();
       setTimeout(function(){ gerarResumoFinal(); }, 1500);
     }).catch(function() {
@@ -1229,7 +1240,7 @@ function erro() {
 function reiniciar() {
   clearInterval(_timerInterval);
   if (_sintetizador) _sintetizador.cancel();
-  hist = []; cat = ''; _resumoTexto = ''; _apresentacao = ''; _tempoRestante = 50*60; _sysAtual = SYS; if (_somAtivo) toggleSom(); if (_modoSilencio) toggleSilencio(); if (_silencioTimer) clearTimeout(_silencioTimer);
+  hist = []; cat = ''; _resumoTexto = ''; _apresentacao = ''; _tempoRestante = 50*60; _sysAtual = SYS; _sessaoEncerrada = false; if (_somAtivo) toggleSom(); if (_modoSilencio) toggleSilencio(); if (_silencioTimer) clearTimeout(_silencioTimer);
   var btns = document.querySelectorAll('.cat');
   for (var i = 0; i < btns.length; i++) btns[i].classList.remove('ativo');
   document.querySelector('.cat').classList.add('ativo');
