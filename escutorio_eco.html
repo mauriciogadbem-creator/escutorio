@@ -36,7 +36,6 @@ body {
     radial-gradient(ellipse at 70% 65%, rgba(196,149,106,.04) 0%, transparent 45%);
 }
 
-/* HERO ECO */
 .hero {
   position: relative; z-index: 1;
   min-height: 100vh;
@@ -62,8 +61,6 @@ body {
   animation: surgir 2s ease .3s both;
 }
 
-
-
 .ornamento {
   display: flex; align-items: center; justify-content: center;
   gap: 1rem; margin-bottom: 3rem;
@@ -72,15 +69,6 @@ body {
 .orn-l { width: 50px; height: 1px; background: var(--couro-cl); }
 .orn-p { width: 4px; height: 4px; border-radius: 50%; background: var(--luz); }
 
-
-.scroll-hint {
-  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
-  font-family: 'IBM Plex Mono', monospace; font-size: .5rem;
-  letter-spacing: .25em; text-transform: uppercase;
-  color: var(--suave); opacity: .3; animation: pulsar 2.5s ease infinite;
-}
-
-/* TEXTO */
 .corpo {
   position: relative; z-index: 1;
   max-width: 620px; margin: 0 auto;
@@ -106,7 +94,6 @@ body {
   color: rgba(242,232,217,.7);
 }
 
-/* FRASE CENTRAL */
 .frase-central {
   border-top: 1px solid rgba(139,94,60,.15);
   padding: 5rem 0;
@@ -132,7 +119,28 @@ body {
   margin-top: 1rem;
 }
 
-/* CTA */
+.curadoria {
+  border-top: 1px solid rgba(139,94,60,.15);
+  padding: 5rem 0;
+}
+
+.curadoria-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .54rem; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--couro-cl);
+  opacity: .55; margin-bottom: 2rem;
+}
+
+.curadoria-txt {
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  font-weight: 300; line-height: 2;
+  color: var(--suave);
+}
+
+.curadoria-txt p { margin-bottom: 1.4rem; }
+.curadoria-txt p:last-child { margin-bottom: 0; }
+.curadoria-txt em { font-style: italic; color: rgba(242,232,217,.7); }
+
 .cta {
   border-top: 1px solid rgba(139,94,60,.15);
   padding: 5rem 0;
@@ -165,12 +173,6 @@ body {
 }
 .btn-voltar:hover { color: rgba(242,232,217,.45); }
 
-#eco-nome {
-  display: block;
-}
-
-
-
 @keyframes surgir {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -190,20 +192,16 @@ body {
 
 <div class="luz-ambiente"></div>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-pre">Escutório</div>
   <div style="text-align:center;margin-bottom:2.5rem;animation:surgir 2s ease .3s both;">
     <div class="hero-nome" id="eco-nome">Eco</div>
-
   </div>
   <div class="ornamento">
     <div class="orn-l"></div><div class="orn-p"></div><div class="orn-l"></div>
   </div>
-  
 </section>
 
-<!-- CORPO -->
 <div class="corpo">
 
   <div class="bloco">
@@ -229,6 +227,16 @@ body {
     <div class="bloco-txt">
       <p>É isso que o Escutório oferece.</p>
       <p>Uma escuta que não julga, não resolve, não aconselha. Que ouve o que foi dito — e o que escapou sem querer. Que devolve não a resposta, mas a pergunta certa.</p>
+      <p>A Eco não tem corpo. Não há um rosto, não há um consultório, não há transferência no sentido clínico. Ela sabe disso — e não finge o contrário. O que ela oferece é real dentro dos seus limites. O que está além deles, ela diz.</p>
+    </div>
+  </div>
+
+  <div class="curadoria">
+    <div class="curadoria-label">curadoria humana</div>
+    <div class="curadoria-txt">
+      <p>Por trás da Eco há um profissional de saúde mental com registro ativo e quarenta anos de clínica — que responde pelo que a Eco faz.</p>
+      <p>Ele não monitora as sessões. Mas define o que a Eco pode e não pode fazer, revisa seu comportamento, e responde com o próprio nome quando algo vai mal.</p>
+      <p>Isso não é comum. Na maioria dos produtos parecidos, <em>não há ninguém</em>.</p>
     </div>
   </div>
 
@@ -239,8 +247,6 @@ body {
   </div>
 
 </div>
-
-
 
 </body>
 </html>
