@@ -250,9 +250,10 @@
     <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.5);line-height:1.8;max-width:420px;margin-bottom:1.5rem;">
       Por hoje, chegamos aqui.<br>A Eco estará aqui amanhã.
     </p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.25);line-height:1.8;max-width:380px;margin-bottom:1.5rem;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.25);line-height:1.8;max-width:380px;margin-bottom:2rem;">
       O que fica entre as sessões também é parte do processo.
     </p>
+    <div id="sala-espera" style="max-width:480px;width:100%;text-align:left;margin-bottom:2rem;"></div>
     <p style="font-family:monospace;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.25);margin-bottom:2rem;">uma sessão por dia</p>
     <button onclick="resetarLimite()" style="background:transparent;border:none;color:rgba(242,232,217,.12);font-family:monospace;font-size:.46rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:.3rem .8rem;transition:color .3s;" onmouseover="this.style.color='rgba(242,232,217,.3)'" onmouseout="this.style.color='rgba(242,232,217,.12)'">modo teste</button>
   </div>
@@ -420,6 +421,7 @@ function registrarSessaoHoje() {
 function mostrarBloqueio() {
   document.getElementById('tela-apresentacao').style.display = 'none';
   document.getElementById('tela-bloqueio').style.display = 'flex';
+  popularSalaEspera();
 }
 
 // ── VOZ ────────────────────────────────────────────────
@@ -729,7 +731,61 @@ function iniciarSom() {
 }
 
 // ── DIÁRIO DE SESSÕES ─────────────────────────────────
-function salvarSessaoNoDiario(resumo) {
+function popularSalaEspera() {
+  try {
+    var diario = JSON.parse(localStorage.getItem('eco_diario') || '[]');
+    var sala = document.getElementById('sala-espera');
+    if (!sala || diario.length === 0) return;
+
+    // Fragmento da última sessão — uma frase do resumo
+    var ultimo = diario[0];
+    if (ultimo && ultimo.resumo) {
+      var frases = ultimo.resumo.replace(/\*\*/g,'').split(/[.!?]/).map(function(f){ return f.trim(); }).filter(function(f){ return f.length > 30; });
+      if (frases.length > 0) {
+        var frase = frases[Math.floor(Math.random() * Math.min(frases.length, 3))];
+        var bloco = document.createElement('div');
+        bloco.style.cssText = 'border-left:1px solid rgba(196,149,106,.2);padding:1rem 1.4rem;margin-bottom:1.5rem;';
+        var label = document.createElement('div');
+        label.style.cssText = 'font-family:monospace;font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.3);margin-bottom:.6rem;';
+        label.textContent = 'da última sessão';
+        var txt = document.createElement('div');
+        txt.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:1rem;font-style:italic;color:rgba(242,232,217,.35);line-height:1.8;';
+        txt.textContent = frase + '.';
+        bloco.appendChild(label);
+        bloco.appendChild(txt);
+        sala.appendChild(bloco);
+      }
+    }
+
+    // Temas recorrentes — após 5 sessões
+    if (diario.length >= 5) {
+      var todoTexto = diario.slice(0, 10).map(function(s){ return s.resumo || ''; }).join(' ').toLowerCase();
+      var palavrasIgnorar = ['sessão','maurício','chegou','disse','para','como','pelo','pela','que','com','uma','não','mas','foi','sua','seu','mais','este','esta','esse','essa','por','sem','aos','nas','nos','das','dos','quando','ainda','sobre','esse','essa','numa','nessa','neste'];
+      var freq = {};
+      todoTexto.replace(/[^a-záéíóúãõâêîôûàç\s]/g,'').split(/\s+/).forEach(function(w){
+        if (w.length > 4 && palavrasIgnorar.indexOf(w) === -1) {
+          freq[w] = (freq[w] || 0) + 1;
+        }
+      });
+      var temas = Object.keys(freq).filter(function(w){ return freq[w] >= 2; }).sort(function(a,b){ return freq[b]-freq[a]; }).slice(0,5);
+      if (temas.length >= 2) {
+        var blocoTemas = document.createElement('div');
+        blocoTemas.style.cssText = 'border-left:1px solid rgba(196,149,106,.2);padding:1rem 1.4rem;margin-bottom:1.5rem;';
+        var labelTemas = document.createElement('div');
+        labelTemas.style.cssText = 'font-family:monospace;font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,200,122,.3);margin-bottom:.6rem;';
+        labelTemas.textContent = 'palavras que voltaram';
+        var txtTemas = document.createElement('div');
+        txtTemas.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:1.1rem;font-style:italic;color:rgba(242,232,217,.3);line-height:1.8;letter-spacing:.02em;';
+        txtTemas.textContent = temas.join(', ') + '.';
+        blocoTemas.appendChild(labelTemas);
+        blocoTemas.appendChild(txtTemas);
+        sala.appendChild(blocoTemas);
+      }
+    }
+  } catch(e) {}
+}
+
+
   try {
     var diario = JSON.parse(localStorage.getItem('eco_diario') || '[]');
     var hoje = new Date();
@@ -947,7 +1003,13 @@ function criarBloco(quem, texto, corBorda, bgColor, corLabel, corTexto, italico)
   bloco.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function adicionarFalaEco(texto) {
+function adicionarFalaEco(texto, isEncerramento) {
+  // Pausa deliberada — cria sensação de escuta antes de responder
+  var pausaMs = 5000 + Math.random() * 4000; // 5 a 9 segundos
+  setTimeout(function() { _digitarEco(texto, isEncerramento); }, pausaMs);
+}
+
+function _digitarEco(texto, isEncerramento) {
   // Criar bloco com parágrafo vazio para animação de digitação
   var d = document.getElementById('dialogo');
   var bloco = document.createElement('div');
