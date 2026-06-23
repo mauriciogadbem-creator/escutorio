@@ -919,6 +919,8 @@ function _digitarEco(texto, isEncerramento) {
   function escreverPalavra() {
     if (i >= palavrasTotal.length) {
       falarEco(texto);
+      // Garantir que bloco-queixa esteja sempre escondido após a primeira queixa
+      document.getElementById('bloco-queixa').style.display = 'none';
       if (!_sessaoEncerrada) {
         var sinais = ['por hoje e isso', 'ficamos aqui por hoje', 'ate aqui por hoje', 'por hoje é isso'];
         var textoMin = texto.toLowerCase();
@@ -1006,6 +1008,7 @@ function encerrarSessaoUsuario() {
   }
   clearInterval(_timerInterval);
   document.getElementById('re').classList.remove('vis');
+  document.getElementById('bloco-queixa').style.display = 'none';
   var dica = document.getElementById('dica-encerramento');
   if (dica) dica.style.display = 'none';
   var btn = document.getElementById('btn-encerrar');
