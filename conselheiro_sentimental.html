@@ -1017,6 +1017,8 @@ function encerrarSessaoUsuario() {
     document.getElementById('ld').classList.add('ativo');
     var msgFim = { role: 'user', content: 'O usuário encerrou. Uma frase de encerramento — breve, com a temperatura desta sessão específica.' };
     api(hist.concat([msgFim])).then(function(r) {
+      hist.push({ role: 'user', content: '[encerramento]' });
+      hist.push({ role: 'assistant', content: r });
       adicionarFalaEco(r, true);
       registrarSessaoHoje();
       setTimeout(function(){ gerarResumoFinal(); }, 3000);
@@ -1031,7 +1033,7 @@ function encerrarSessaoUsuario() {
 }
 
 function gerarResumoFinal() {
-  var msgResumo = { role: 'user', content: 'Faça uma anotação clínica desta sessão proporcional ao que aconteceu. Se a sessão foi mínima — poucas trocas, sem queixa desenvolvida — a nota deve ser breve, uma ou duas linhas. Se a sessão foi densa, pode ir até cinco linhas. Terceira pessoa. Sem forçar interpretação onde não houve material suficiente.' };
+  var msgResumo = { role: 'user', content: '[INSTRUCAO TECNICA — NAO E FALA DO PACIENTE] A sessao encerrou. Redija agora uma anotacao clinica em terceira pessoa, proporcional ao que aconteceu: uma ou duas linhas se a sessao foi minima, ate cinco linhas se foi densa. Nao interprete onde nao houve material. Nao responda como Eco em sessao — isso e uma nota de prontuario, nao uma fala clinica.' };
   api(hist.concat([msgResumo])).then(function(resumo) {
     mostrarResumo(resumo);
   }).catch(function() {
