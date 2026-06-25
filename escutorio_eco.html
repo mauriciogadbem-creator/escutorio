@@ -6,180 +6,43 @@
 <title>Eco — Escutório</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap');
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --mogno: #1E0E06;
-  --couro-cl: #C4956A;
-  --creme: #F2E8D9;
-  --luz: #E8C87A;
-  --suave: rgba(242,232,217,.42);
+  --mogno: #1E0E06; --couro-cl: #C4956A; --creme: #F2E8D9;
+  --luz: #E8C87A; --suave: rgba(242,232,217,.42);
 }
-
 html { scroll-behavior: smooth; }
-
-body {
-  background: var(--mogno);
-  color: var(--creme);
-  font-family: 'Cormorant Garamond', serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-.luz-ambiente {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-  background:
-    radial-gradient(ellipse at 30% 40%, rgba(232,200,122,.06) 0%, transparent 55%),
-    radial-gradient(ellipse at 70% 65%, rgba(196,149,106,.04) 0%, transparent 45%);
-}
-
-.hero {
-  position: relative; z-index: 1;
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 5rem 2rem; text-align: center;
-}
-
-.hero-pre {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .56rem; letter-spacing: .35em;
-  text-transform: uppercase; color: var(--luz);
-  opacity: .45; margin-bottom: 2rem;
-  animation: surgir 2s ease both;
-}
-
-.hero-nome {
-  font-size: clamp(5rem, 18vw, 12rem);
-  font-weight: 300; font-style: italic;
-  letter-spacing: .08em; line-height: 1;
-  color: var(--couro-cl);
-  margin-bottom: 1rem;
-  animation: surgir 2s ease .3s both;
-}
-
-.ornamento {
-  display: flex; align-items: center; justify-content: center;
-  gap: 1rem; margin-bottom: 3rem;
-  animation: surgir 2s ease .6s both; opacity: .25;
-}
+body { background: var(--mogno); color: var(--creme); font-family: 'Cormorant Garamond', serif; min-height: 100vh; overflow-x: hidden; }
+.luz-ambiente { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: radial-gradient(ellipse at 30% 40%, rgba(232,200,122,.06) 0%, transparent 55%), radial-gradient(ellipse at 70% 65%, rgba(196,149,106,.04) 0%, transparent 45%); }
+.hero { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; }
+.hero-pre { font-family: 'IBM Plex Mono', monospace; font-size: .56rem; letter-spacing: .35em; text-transform: uppercase; color: var(--luz); opacity: .45; margin-bottom: 2rem; animation: surgir 2s ease both; }
+.hero-nome { font-size: clamp(5rem, 18vw, 12rem); font-weight: 300; font-style: italic; letter-spacing: .08em; line-height: 1; color: var(--couro-cl); margin-bottom: 1rem; animation: surgir 2s ease .3s both; }
+.ornamento { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 3rem; animation: surgir 2s ease .6s both; opacity: .25; }
 .orn-l { width: 50px; height: 1px; background: var(--couro-cl); }
 .orn-p { width: 4px; height: 4px; border-radius: 50%; background: var(--luz); }
-
-.corpo {
-  position: relative; z-index: 1;
-  max-width: 620px; margin: 0 auto;
-  padding: 0 2rem 6rem;
-}
-
-.bloco {
-  border-top: 1px solid rgba(139,94,60,.15);
-  padding: 5rem 0;
-}
-
-.bloco-txt {
-  font-size: clamp(1.05rem, 2vw, 1.2rem);
-  font-weight: 300; line-height: 2;
-  color: var(--suave);
-}
-
+.corpo { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding: 0 2rem 6rem; }
+.bloco { border-top: 1px solid rgba(139,94,60,.15); padding: 5rem 0; }
+.bloco-txt { font-size: clamp(1.05rem, 2vw, 1.2rem); font-weight: 300; line-height: 2; color: var(--suave); }
 .bloco-txt p { margin-bottom: 1.4rem; }
 .bloco-txt p:last-child { margin-bottom: 0; }
-
-.bloco-txt em {
-  font-style: italic;
-  color: rgba(242,232,217,.7);
-}
-
-.frase-central {
-  border-top: 1px solid rgba(139,94,60,.15);
-  padding: 5rem 0;
-  text-align: center;
-}
-
-.frase-grande {
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
-  font-weight: 300; line-height: 1.4;
-  color: var(--creme);
-  margin-bottom: .8rem;
-}
-
-.frase-grande em {
-  font-style: italic;
-  color: var(--couro-cl);
-}
-
-.frase-pequena {
-  font-size: clamp(1rem, 2vw, 1.3rem);
-  font-weight: 300; font-style: italic;
-  color: var(--suave);
-  margin-top: 1rem;
-}
-
-.curadoria {
-  border-top: 1px solid rgba(139,94,60,.15);
-  padding: 5rem 0;
-}
-
-.curadoria-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .54rem; letter-spacing: .3em;
-  text-transform: uppercase; color: var(--couro-cl);
-  opacity: .55; margin-bottom: 2rem;
-}
-
-.curadoria-txt {
-  font-size: clamp(1.05rem, 2vw, 1.2rem);
-  font-weight: 300; line-height: 2;
-  color: var(--suave);
-}
-
+.bloco-txt em { font-style: italic; color: rgba(242,232,217,.7); }
+.frase-central { border-top: 1px solid rgba(139,94,60,.15); padding: 5rem 0; text-align: center; }
+.frase-grande { font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 300; line-height: 1.4; color: var(--creme); margin-bottom: .8rem; }
+.frase-grande em { font-style: italic; color: var(--couro-cl); }
+.frase-pequena { font-size: clamp(1rem, 2vw, 1.3rem); font-weight: 300; font-style: italic; color: var(--suave); margin-top: 1rem; }
+.curadoria { border-top: 1px solid rgba(139,94,60,.15); padding: 5rem 0; }
+.curadoria-label { font-family: 'IBM Plex Mono', monospace; font-size: .54rem; letter-spacing: .3em; text-transform: uppercase; color: var(--couro-cl); opacity: .55; margin-bottom: 2rem; }
+.curadoria-txt { font-size: clamp(1.05rem, 2vw, 1.2rem); font-weight: 300; line-height: 2; color: var(--suave); }
 .curadoria-txt p { margin-bottom: 1.4rem; }
 .curadoria-txt p:last-child { margin-bottom: 0; }
 .curadoria-txt em { font-style: italic; color: rgba(242,232,217,.7); }
-
-.cta {
-  border-top: 1px solid rgba(139,94,60,.15);
-  padding: 5rem 0;
-  text-align: center;
-}
-
-.cta-pre {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .54rem; letter-spacing: .3em;
-  text-transform: uppercase; color: rgba(232,200,122,.3);
-  margin-bottom: 1.8rem;
-}
-
-.btn-entrar {
-  display: inline-block; background: transparent;
-  border: 1px solid rgba(232,200,122,.4); color: var(--luz);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .62rem; letter-spacing: .28em; text-transform: uppercase;
-  padding: 1rem 3rem; cursor: pointer; text-decoration: none;
-  transition: all .35s;
-}
+.cta { border-top: 1px solid rgba(139,94,60,.15); padding: 5rem 0; text-align: center; }
+.cta-pre { font-family: 'IBM Plex Mono', monospace; font-size: .54rem; letter-spacing: .3em; text-transform: uppercase; color: rgba(232,200,122,.3); margin-bottom: 1.8rem; }
+.btn-entrar { display: inline-block; background: transparent; border: 1px solid rgba(232,200,122,.4); color: var(--luz); font-family: 'IBM Plex Mono', monospace; font-size: .62rem; letter-spacing: .28em; text-transform: uppercase; padding: 1rem 3rem; cursor: pointer; text-decoration: none; transition: all .35s; }
 .btn-entrar:hover { background: rgba(232,200,122,.07); border-color: var(--luz); }
-
-.btn-voltar {
-  display: block; margin-top: 1.5rem;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .52rem; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(242,232,217,.2); text-decoration: none;
-  transition: color .3s;
-}
+.btn-voltar { display: block; margin-top: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: .52rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(242,232,217,.2); text-decoration: none; transition: color .3s; }
 .btn-voltar:hover { color: rgba(242,232,217,.45); }
-
-@keyframes surgir {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulsar {
-  0%, 100% { opacity: .15; } 50% { opacity: .4; }
-}
+@keyframes surgir { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 </style>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1E0E06">
@@ -189,13 +52,11 @@ body {
   <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
-
 <div class="luz-ambiente"></div>
-
 <section class="hero">
   <div class="hero-pre">Escutório</div>
   <div style="text-align:center;margin-bottom:2.5rem;animation:surgir 2s ease .3s both;">
-    <div class="hero-nome" id="eco-nome">Eco</div>
+    <div class="hero-nome">Eco</div>
   </div>
   <div class="ornamento">
     <div class="orn-l"></div><div class="orn-p"></div><div class="orn-l"></div>
@@ -234,7 +95,7 @@ body {
   <div class="curadoria">
     <div class="curadoria-label">curadoria humana</div>
     <div class="curadoria-txt">
-      <p>Por trás da Eco há um profissional de saúde mental com registro ativo e quarenta anos de clínica — que responde pelo que a Eco faz.</p>
+      <p>Por trás da Eco há um médico psiquiatra e psicanalista brasileiro, com registro ativo no CFM e quarenta anos de clínica.</p>
       <p>Ele não monitora as sessões. Mas define o que a Eco pode e não pode fazer, revisa seu comportamento, e responde com o próprio nome quando algo vai mal.</p>
       <p>Isso não é comum. Na maioria dos produtos parecidos, <em>não há ninguém</em>.</p>
     </div>
@@ -247,6 +108,5 @@ body {
   </div>
 
 </div>
-
 </body>
 </html>
