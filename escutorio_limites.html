@@ -12,124 +12,31 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap');
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --mogno: #1E0E06;
-  --couro-cl: #C4956A;
-  --creme: #F2E8D9;
-  --luz: #E8C87A;
-  --suave: rgba(242,232,217,.42);
-}
-
-body {
-  background: var(--mogno);
-  color: var(--creme);
-  font-family: 'Cormorant Garamond', serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-.luz-ambiente {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse at 40% 50%, rgba(232,200,122,.05) 0%, transparent 55%);
-}
-
-.pagina {
-  position: relative; z-index: 1;
-  max-width: 640px; margin: 0 auto;
-  padding: 5rem 2rem 6rem;
-}
-
-.voltar {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .52rem; letter-spacing: .2em;
-  text-transform: uppercase; color: rgba(242,232,217,.2);
-  text-decoration: none; display: inline-block;
-  margin-bottom: 3rem; transition: color .3s;
-}
+:root { --mogno: #1E0E06; --couro-cl: #C4956A; --creme: #F2E8D9; --luz: #E8C87A; --suave: rgba(242,232,217,.42); }
+body { background: var(--mogno); color: var(--creme); font-family: 'Cormorant Garamond', serif; min-height: 100vh; overflow-x: hidden; }
+.luz-ambiente { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: radial-gradient(ellipse at 40% 50%, rgba(232,200,122,.05) 0%, transparent 55%); }
+.pagina { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 5rem 2rem 6rem; }
+.voltar { font-family: 'IBM Plex Mono', monospace; font-size: .52rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(242,232,217,.2); text-decoration: none; display: inline-block; margin-bottom: 3rem; transition: color .3s; }
 .voltar:hover { color: rgba(242,232,217,.5); }
-
-.titulo {
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 300; line-height: 1.1;
-  color: var(--creme); margin-bottom: .5rem;
-}
+.titulo { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 300; line-height: 1.1; color: var(--creme); margin-bottom: .5rem; }
 .titulo em { font-style: italic; color: var(--couro-cl); }
-
-.subtitulo {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .54rem; letter-spacing: .25em;
-  text-transform: uppercase; color: rgba(232,200,122,.3);
-  margin-bottom: 4rem;
-}
-
-.nao {
-  margin-bottom: 2.5rem;
-  padding-left: 1.5rem;
-  border-left: 1px solid rgba(196,149,106,.2);
-}
-
-.nao-titulo {
-  font-size: 1.15rem; font-weight: 400;
-  color: var(--creme); margin-bottom: .5rem;
-  letter-spacing: .01em;
-}
-
-.nao-desc {
-  font-size: 1rem; font-weight: 300;
-  font-style: italic; color: var(--suave);
-  line-height: 1.8;
-}
-
-.divisor {
-  border: none; border-top: 1px solid rgba(139,94,60,.15);
-  margin: 3.5rem 0;
-}
-
-.sim-titulo {
-  font-size: 1.3rem; font-weight: 300;
-  font-style: italic; color: var(--couro-cl);
-  margin-bottom: 1.5rem;
-}
-
-.sim-corpo {
-  font-size: 1.05rem; font-weight: 300;
-  color: var(--suave); line-height: 1.9;
-}
+.subtitulo { font-family: 'IBM Plex Mono', monospace; font-size: .54rem; letter-spacing: .25em; text-transform: uppercase; color: rgba(232,200,122,.3); margin-bottom: 4rem; }
+.nao { margin-bottom: 2.5rem; padding-left: 1.5rem; border-left: 1px solid rgba(196,149,106,.2); }
+.nao-titulo { font-size: 1.15rem; font-weight: 400; color: var(--creme); margin-bottom: .5rem; letter-spacing: .01em; }
+.nao-desc { font-size: 1rem; font-weight: 300; font-style: italic; color: var(--suave); line-height: 1.8; }
+.divisor { border: none; border-top: 1px solid rgba(139,94,60,.15); margin: 3.5rem 0; }
+.sim-titulo { font-size: 1.3rem; font-weight: 300; font-style: italic; color: var(--couro-cl); margin-bottom: 1.5rem; }
+.sim-corpo { font-size: 1.05rem; font-weight: 300; color: var(--suave); line-height: 1.9; }
 .sim-corpo p { margin-bottom: 1.1rem; }
-
-.cta {
-  margin-top: 4rem; text-align: center;
-}
-
-.cta-meio {
-  margin: 3rem 0; text-align: center;
-}
-
-.btn-entrar {
-  display: inline-block; background: transparent;
-  border: 1px solid rgba(232,200,122,.4); color: var(--luz);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: .62rem; letter-spacing: .28em; text-transform: uppercase;
-  padding: 1rem 3rem; cursor: pointer; text-decoration: none;
-  transition: all .35s;
-}
+.cta { margin-top: 4rem; text-align: center; }
+.btn-entrar { display: inline-block; background: transparent; border: 1px solid rgba(232,200,122,.4); color: var(--luz); font-family: 'IBM Plex Mono', monospace; font-size: .62rem; letter-spacing: .28em; text-transform: uppercase; padding: 1rem 3rem; cursor: pointer; text-decoration: none; transition: all .35s; }
 .btn-entrar:hover { background: rgba(232,200,122,.07); border-color: var(--luz); }
-
-@media (max-width: 480px) {
-  .pagina { padding: 3rem 1.2rem 4rem; }
-  .titulo { font-size: clamp(1.8rem, 8vw, 2.5rem); }
-}
+@media (max-width: 480px) { .pagina { padding: 3rem 1.2rem 4rem; } .titulo { font-size: clamp(1.8rem, 8vw, 2.5rem); } }
 </style>
 </head>
 <body>
-
 <div class="luz-ambiente"></div>
-
 <div class="pagina">
   <a class="voltar" href="escutorio_apresentacao.html">← voltar</a>
 
@@ -137,18 +44,13 @@ body {
   <div class="subtitulo">um compromisso de honestidade</div>
 
   <div class="nao">
-    <div class="nao-titulo">A Eco não salva.</div>
-    <div class="nao-desc">Não existe aqui para resgatar ninguém de nada. Quem precisa ser salvo precisa de outro recurso — e a Eco vai dizer isso quando for o caso.</div>
+    <div class="nao-titulo">A Eco não está sempre disponível.</div>
+    <div class="nao-desc">Uma sessão por dia. Cinquenta minutos. Como um consultório real — porque o setting importa, inclusive aqui. O que acontece entre as sessões — o que fica, o que se move, o que emerge sem que você esteja falando — é parte do processo. Disponibilidade infinita não é cuidado. É ruído.</div>
   </div>
 
   <div class="nao">
-    <div class="nao-titulo">A Eco não cura.</div>
-    <div class="nao-desc">Cura é palavra que pertence à medicina. O que a Eco faz — quando faz — é criar condições para que algo se mova. O movimento é seu.</div>
-  </div>
-
-  <div class="nao">
-    <div class="nao-titulo">A Eco não resolve.</div>
-    <div class="nao-desc">Se você veio com um problema que precisa de solução, há ferramentas melhores. A Eco não otimiza, não planeja, não dá cinco passos para nada.</div>
+    <div class="nao-titulo">A Eco não salva, não cura, não resolve.</div>
+    <div class="nao-desc">Não existe aqui para resgatar ninguém de nada, nem para curar — palavra que pertence à medicina. Se você veio com um problema que precisa de solução, há ferramentas melhores. A Eco não otimiza, não planeja, não dá cinco passos para nada.</div>
   </div>
 
   <div class="nao">
@@ -163,18 +65,7 @@ body {
 
   <div class="nao">
     <div class="nao-titulo">A Eco não substitui análise.</div>
-    <div class="nao-desc">Não há transferência aqui no sentido clínico. Não há um corpo presente, um rosto, uma história compartilhada ao longo do tempo. A Eco sabe disso — e quando o que você precisa está além do que ela pode oferecer, ela diz.</div>
-  </div>
-
-  <div class="nao">
-    <div class="nao-titulo">A Eco não está sempre disponível.</div>
-    <div class="nao-desc">Uma sessão por dia. Cinquenta minutos. Como um consultório real — porque o setting importa, inclusive aqui.</div>
-    <div class="nao-desc" style="margin-top:.8rem;">Uma sessão por dia não é uma limitação técnica. É uma posição. O que acontece entre as sessões — o que fica, o que se move, o que emerge sem que você esteja falando — é parte do processo. Disponibilidade infinita não é cuidado. É ruído.</div>
-  </div>
-
-  <!-- Link de entrada no meio — para quem já está convencido antes do final -->
-  <div class="cta-meio">
-    <a class="btn-entrar" href="conselheiro_sentimental.html">Entrar no Escutório</a>
+    <div class="nao-desc">Não há transferência aqui no sentido clínico. Não há um corpo presente, um rosto, uma história compartilhada ao longo do tempo. A Eco sabe disso — e quando o que você precisa está além do que ela pode oferecer, ela diz com todas as letras.</div>
   </div>
 
   <hr class="divisor">
@@ -191,6 +82,5 @@ body {
     <a class="btn-entrar" href="conselheiro_sentimental.html">Entrar no Escutório</a>
   </div>
 </div>
-
 </body>
 </html>
