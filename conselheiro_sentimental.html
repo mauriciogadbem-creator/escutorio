@@ -1193,6 +1193,26 @@ function reiniciar() {
   document.getElementById('apres-input').focus();
 }
 
+// ── RESET AO CARREGAR ─────────────────────────────────
+// Garante que a página sempre inicia na tela de apresentação,
+// nunca no meio de uma sessão anterior não encerrada.
+document.addEventListener('DOMContentLoaded', function() {
+  // Sempre mostrar apresentação, esconder sessão
+  var telaApres = document.getElementById('tela-apresentacao');
+  var telaSessao = document.getElementById('tela-sessao');
+  var telaBloqueio = document.getElementById('tela-bloqueio');
+  if (telaApres) telaApres.style.display = 'flex';
+  if (telaSessao) telaSessao.style.display = 'none';
+  // Mostrar bloqueio se já fez sessão hoje
+  if (jaFezSessaoHoje()) {
+    if (telaApres) telaApres.style.display = 'none';
+    if (telaBloqueio) {
+      telaBloqueio.style.display = 'flex';
+      popularSalaEspera();
+    }
+  }
+});
+
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && e.ctrlKey) {
     var telaApres = document.getElementById('tela-apresentacao');
