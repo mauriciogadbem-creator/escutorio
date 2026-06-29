@@ -1,17 +1,63 @@
 const https = require('https');
 
+// Verificar token Supabase via API REST (sem dependências externas)
+function verificarToken(token) {
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'qaytrvchoisjfpofjbkz.supabase.co',
+      path: '/auth/v1/user',
+      method: 'GET',
+      headers: {
+        'apikey': 'sb_publishable_t23KG9nU3jggNcTxExJbwA_I5-PzUFv',
+        'Authorization': `Bearer ${token}`
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode === 200) {
+          try { resolve(JSON.parse(data)); }
+          catch(e) { reject(new Error('Resposta inválida')); }
+        } else {
+          reject(new Error('Token inválido'));
+        }
+      });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Método não permitido' };
   }
 
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  };
+
   try {
     const body = JSON.parse(event.body);
-    const { messages, system } = body;
+    const { messages, system, token } = body;
+
+    // Se token presente, verificar autenticação
+    if (token) {
+      try {
+        await verificarToken(token);
+      } catch(e) {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ error: { message: 'Sessão expirada. Faça login novamente.' } })
+        };
+      }
+    }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'API não configurada' }) };
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'API não configurada' }) };
     }
 
     const payload = JSON.stringify({
@@ -44,16 +90,14 @@ exports.handler = async function(event, context) {
 
     return {
       statusCode: resposta.status,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers,
       body: resposta.body
     };
 
   } catch (err) {
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ error: err.message })
     };
   }
