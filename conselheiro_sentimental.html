@@ -59,6 +59,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Escutório">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 <svg class="fundo" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -108,6 +109,24 @@
     <div class="ornamento"><div class="orn-l"></div><div class="orn-p"></div><div class="orn-l"></div></div>
   </div>
   <div class="container">
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" style="display:none;flex-direction:column;align-items:center;width:100%;margin-bottom:2rem;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.45);line-height:1.9;text-align:center;margin-bottom:2rem;max-width:480px;">
+        Para entrar no Escutório,<br>informe seu e-mail.
+      </p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,200,122,.3);margin-bottom:1.5rem;text-align:center;">
+        você receberá um link de acesso
+      </p>
+      <div style="width:100%;max-width:400px;margin-bottom:1rem;">
+        <input id="login-email" type="email" placeholder="seu@email.com" style="width:100%;background:rgba(242,232,217,.03);border:1px solid rgba(139,94,60,.35);color:#F2E8D9;font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;line-height:1.8;padding:1rem 1.3rem;outline:none;transition:border-color .4s;" />
+      </div>
+      <div id="login-msg" style="font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,200,122,.5);margin-bottom:1rem;text-align:center;min-height:1.5rem;"></div>
+      <div style="display:flex;justify-content:flex-end;width:100%;max-width:400px;">
+        <button class="btn-p" id="btn-login" onclick="enviarMagicLink()">Receber link de acesso</button>
+      </div>
+    </div>
+
     <!-- TELA DE APRESENTAÇÃO -->
     <div id="tela-apresentacao" style="display:flex;flex-direction:column;align-items:center;width:100%;margin-bottom:2rem;">
       <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;font-style:italic;color:rgba(242,232,217,.45);line-height:1.9;text-align:center;margin-bottom:2rem;max-width:480px;">Antes de começar,<br>apresente-se.</p>
@@ -192,6 +211,86 @@
 </div><!-- /pagina -->
 
 <script>
+
+// ── SUPABASE ───────────────────────────────────────────
+var SUPA_URL = 'https://qaytrvchoisjfpofjbkz.supabase.co';
+var SUPA_KEY = 'sb_publishable_t23KG9nU3jggNcTxExJbwA_I5-PzUFv';
+var _supabase = null;
+var _userToken = null;
+var _userId = null;
+
+function iniciarSupabase() {
+  if (typeof supabase !== 'undefined' && supabase.createClient) {
+    _supabase = supabase.createClient(SUPA_URL, SUPA_KEY);
+  }
+}
+
+async function verificarSessaoAtiva() {
+  if (!_supabase) return false;
+  try {
+    var res = await _supabase.auth.getSession();
+    if (res.data && res.data.session) {
+      _userToken = res.data.session.access_token;
+      _userId = res.data.session.user.id;
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+async function enviarMagicLink() {
+  var email = document.getElementById('login-email').value.replace(/\s/g,'');
+  var msg = document.getElementById('login-msg');
+  var btn = document.getElementById('btn-login');
+  if (!email || !email.includes('@')) {
+    msg.textContent = 'Informe um e-mail válido.';
+    msg.style.color = 'rgba(200,80,60,.7)';
+    return;
+  }
+  btn.disabled = true;
+  msg.textContent = 'Enviando...';
+  msg.style.color = 'rgba(232,200,122,.5)';
+  try {
+    var res = await _supabase.auth.signInWithOtp({
+      email: email,
+      options: { emailRedirectTo: 'https://fastidious-haupia-9c379f.netlify.app/conselheiro_sentimental.html' }
+    });
+    if (res.error) throw res.error;
+    msg.textContent = 'Link enviado. Verifique seu e-mail.';
+    msg.style.color = 'rgba(196,149,106,.8)';
+  } catch(e) {
+    msg.textContent = 'Erro ao enviar. Tente novamente.';
+    msg.style.color = 'rgba(200,80,60,.7)';
+    btn.disabled = false;
+  }
+}
+
+async function salvarSessaoSupabase(resumo) {
+  if (!_supabase || !_userId) return;
+  try {
+    var hoje = new Date();
+    await _supabase.from('diario').insert({
+      user_id: _userId,
+      data: hoje.toLocaleDateString('pt-BR'),
+      hora: hoje.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+      resumo: resumo,
+      categoria: cat || 'geral'
+    });
+  } catch(e) { console.error('Erro ao salvar diário:', e); }
+}
+
+async function carregarDiarioSupabase() {
+  if (!_supabase || !_userId) return null;
+  try {
+    var res = await _supabase.from('diario')
+      .select('*')
+      .order('criado_em', { ascending: false })
+      .limit(30);
+    if (res.data && res.data.length > 0) return res.data;
+  } catch(e) {}
+  return null;
+}
+
 var cat='', hist=[], _resumoGuardado='', _apresentacao='', _audioCtx=null, _noiseNode=null, _gainNode=null, _somAtivo=false, _modoSilencio=false, _silencioTimer=null, _silencioFala='';
 var _timerInterval=null, _tempoRestante=50*60, _sintetizador=window.speechSynthesis;
 var _micAtivo=false, _micAlvo=null, _micRec=null, _vozEcoAtiva=false;
@@ -460,12 +559,15 @@ function popularSalaEspera(){
 }
 
 function salvarSessaoNoDiario(resumo){
+  // Salvar localmente (fallback)
   try{
     var d=JSON.parse(localStorage.getItem('eco_diario')||'[]'),h=new Date();
     d.unshift({data:h.toLocaleDateString('pt-BR'),hora:h.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),resumo:resumo,categoria:cat||'geral'});
     if(d.length>30)d=d.slice(0,30);
     localStorage.setItem('eco_diario',JSON.stringify(d));
   }catch(e){}
+  // Salvar no Supabase (se autenticado)
+  salvarSessaoSupabase(resumo);
 }
 
 function mostrarDiario(){
@@ -654,6 +756,8 @@ function api(msgs,sysOverride){
   var ep=window.location.hostname==='localhost'||window.location.protocol==='file:'?'https://api.anthropic.com/v1/messages':'/.netlify/functions/eco';
   var sys=sysOverride||_sysAtual;
   var pay={model:'claude-sonnet-4-6',max_tokens:1000,system:sys,messages:msgs};
+  // Incluir token se disponível
+  if (_userToken) pay.token = _userToken;
   return fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pay)}).then(function(res){return res.json().then(function(d){if(!res.ok)throw new Error(d.error?d.error.message:'Erro');return d.content.map(function(b){return b.text||'';}).join('');});});
 }
 
@@ -707,10 +811,41 @@ function reiniciar(){
 }
 
 // RESET AO CARREGAR
-document.addEventListener('DOMContentLoaded',function(){
-  var ta=document.getElementById('tela-apresentacao'),ts=document.getElementById('tela-sessao'),tb=document.getElementById('tela-bloqueio');
-  if(ta)ta.style.display='flex';if(ts)ts.style.display='none';
-  if(jaFezSessaoHoje()){if(ta)ta.style.display='none';if(tb){tb.style.display='flex';popularSalaEspera();}}
+document.addEventListener('DOMContentLoaded', async function() {
+  iniciarSupabase();
+
+  var tl = document.getElementById('tela-login');
+  var ta = document.getElementById('tela-apresentacao');
+  var ts = document.getElementById('tela-sessao');
+  var tb = document.getElementById('tela-bloqueio');
+
+  // Esconder tudo inicialmente
+  if(tl) tl.style.display='none';
+  if(ta) ta.style.display='none';
+  if(ts) ts.style.display='none';
+
+  // Verificar se voltou de um magic link (hash na URL)
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    try {
+      await _supabase.auth.exchangeCodeForSession(window.location.hash);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch(e) {}
+  }
+
+  var logado = await verificarSessaoAtiva();
+
+  if (!logado) {
+    // Mostrar tela de login
+    if(tl) tl.style.display='flex';
+    return;
+  }
+
+  // Usuário autenticado — verificar se já fez sessão hoje
+  if (jaFezSessaoHoje()) {
+    if(tb) { tb.style.display='flex'; popularSalaEspera(); }
+  } else {
+    if(ta) ta.style.display='flex';
+  }
 });
 
 document.addEventListener('keydown',function(e){
