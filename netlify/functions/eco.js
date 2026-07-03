@@ -1,6 +1,5 @@
 const https = require('https');
 
-// Verificar token Supabase via API REST (sem dependências externas)
 function verificarToken(token) {
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -34,7 +33,7 @@ exports.handler = async function(event, context) {
   }
 
   const headers = {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*'
   };
 
@@ -42,7 +41,6 @@ exports.handler = async function(event, context) {
     const body = JSON.parse(event.body);
     const { messages, system, token } = body;
 
-    // Se token presente, verificar autenticação
     if (token) {
       try {
         await verificarToken(token);
@@ -73,15 +71,18 @@ exports.handler = async function(event, context) {
         path: '/v1/messages',
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
-          'Content-Length': Buffer.byteLength(payload)
+          'Content-Length': Buffer.byteLength(payload, 'utf8')
         }
       }, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => resolve({ status: res.statusCode, body: data }));
+        let chunks = [];
+        res.on('data', chunk => chunks.push(chunk));
+        res.on('end', () => {
+          const data = Buffer.concat(chunks).toString('utf8');
+          resolve({ status: res.statusCode, body: data });
+        });
       });
       req.on('error', reject);
       req.write(payload);
