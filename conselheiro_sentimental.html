@@ -247,7 +247,17 @@ async function enviarMagicLink(){
 
 async function salvarSessaoSupabase(resumo){if(!_supabase||!_userId)return;try{var hoje=new Date();await _supabase.from('diario').insert({user_id:_userId,data:hoje.toLocaleDateString('pt-BR'),hora:hoje.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),resumo:resumo,categoria:cat||'geral'});}catch(e){console.error('Erro ao salvar diário:',e);}}
 
-async function carregarDiarioSupabase(){if(!_supabase||!_userId)return null;try{var res=await _supabase.from('diario').select('*').order('criado_em',{ascending:false}).limit(30);if(res.data&&res.data.length>0)return res.data;}catch(e){}return null;}
+async function carregarDiarioSupabase(){
+  if(!_supabase)return null;
+  // Garantir que temos userId — tentar renovar sessão se necessário
+  if(!_userId){try{await verificarSessaoAtiva();}catch(e){}}
+  if(!_userId)return null;
+  try{
+    var res=await _supabase.from('diario').select('*').order('criado_em',{ascending:false}).limit(30);
+    if(res.data&&res.data.length>0)return res.data;
+  }catch(e){}
+  return null;
+}
 
 var cat='',hist=[],_apresentacao='',_audioCtx=null,_noiseNode=null,_gainNode=null,_somAtivo=false,_modoSilencio=false,_silencioTimer=null,_silencioFala='';
 var _timerInterval=null,_tempoRestante=50*60,_sintetizador=window.speechSynthesis;
