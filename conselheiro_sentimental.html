@@ -251,12 +251,12 @@ async function verificarSessaoHojeSupabase(){
   if(!_supabase||!_userId)return false;
   try{
     var hoje=new Date().toISOString().split('T')[0];
-    var res=await _supabase.from('usuarios_autorizados')
+    var res=await _supabase.from('sessoes_diarias')
       .select('ultima_sessao')
-      .eq('email',(await _supabase.auth.getUser()).data.user.email)
+      .eq('user_id',_userId)
       .single();
     if(res.data&&res.data.ultima_sessao===hoje)return true;
-  }catch(e){console.warn('verificarSessaoHojeSupabase erro:',e);}
+  }catch(e){console.warn('verificarSessaoHoje erro:',e);}
   return false;
 }
 
@@ -264,13 +264,17 @@ async function registrarSessaoHojeSupabase(){
   if(!_supabase||!_userId)return;
   try{
     var hoje=new Date().toISOString().split('T')[0];
-    var user=await _supabase.auth.getUser();
-    if(user.data&&user.data.user){
-      await _supabase.from('usuarios_autorizados')
-        .update({ultima_sessao:hoje})
-        .eq('email',user.data.user.email);
+    // Tentar atualizar primeiro
+    var upd=await _supabase.from('sessoes_diarias')
+      .update({ultima_sessao:hoje,atualizado_em:new Date().toISOString()})
+      .eq('user_id',_userId);
+    // Se não existia, inserir
+    if(upd.error||upd.count===0){
+      await _supabase.from('sessoes_diarias')
+        .upsert({user_id:_userId,ultima_sessao:hoje,atualizado_em:new Date().toISOString()});
     }
-  }catch(e){console.warn('registrarSessaoHojeSupabase erro:',e);}
+    console.log('Sessao registrada no Supabase:',hoje);
+  }catch(e){console.warn('registrarSessaoHoje erro:',e);}
 }
 
 async function carregarDiarioSupabase(){
