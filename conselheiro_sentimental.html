@@ -247,6 +247,32 @@ async function enviarMagicLink(){
 
 async function salvarSessaoSupabase(resumo){if(!_supabase||!_userId)return;try{var hoje=new Date();await _supabase.from('diario').insert({user_id:_userId,data:hoje.toLocaleDateString('pt-BR'),hora:hoje.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),resumo:resumo,categoria:cat||'geral'});}catch(e){console.error('Erro ao salvar diário:',e);}}
 
+async function verificarSessaoHojeSupabase(){
+  if(!_supabase||!_userId)return false;
+  try{
+    var hoje=new Date().toISOString().split('T')[0];
+    var res=await _supabase.from('usuarios_autorizados')
+      .select('ultima_sessao')
+      .eq('email',(await _supabase.auth.getUser()).data.user.email)
+      .single();
+    if(res.data&&res.data.ultima_sessao===hoje)return true;
+  }catch(e){console.warn('verificarSessaoHojeSupabase erro:',e);}
+  return false;
+}
+
+async function registrarSessaoHojeSupabase(){
+  if(!_supabase||!_userId)return;
+  try{
+    var hoje=new Date().toISOString().split('T')[0];
+    var user=await _supabase.auth.getUser();
+    if(user.data&&user.data.user){
+      await _supabase.from('usuarios_autorizados')
+        .update({ultima_sessao:hoje})
+        .eq('email',user.data.user.email);
+    }
+  }catch(e){console.warn('registrarSessaoHojeSupabase erro:',e);}
+}
+
 async function carregarDiarioSupabase(){
   if(!_supabase)return null;
   // Garantir sessão ativa
@@ -287,7 +313,7 @@ function encerrarPorTempo(){document.getElementById('re').classList.remove('vis'
 
 function jaFezSessaoHoje(){try{var u=localStorage.getItem('eco_ultima_sessao');if(!u)return false;return u===new Date().toDateString();}catch(e){return false;}}
 function resetarLimite(){try{localStorage.removeItem('eco_ultima_sessao');document.getElementById('tela-bloqueio').style.display='none';document.getElementById('tela-apresentacao').style.display='flex';}catch(e){}}
-function registrarSessaoHoje(){try{localStorage.setItem('eco_ultima_sessao',new Date().toDateString());}catch(e){}}
+function registrarSessaoHoje(){try{localStorage.setItem('eco_ultima_sessao',new Date().toDateString());}catch(e){}registrarSessaoHojeSupabase();}
 function mostrarBloqueio(){document.getElementById('tela-apresentacao').style.display='none';document.getElementById('tela-bloqueio').style.display='flex';popularSalaEspera();}
 
 function toggleVozEco(){_vozEcoAtiva=!_vozEcoAtiva;var btn=document.getElementById('btn-voz-eco');if(!btn)return;if(_vozEcoAtiva){btn.style.color='rgba(232,200,122,.8)';btn.style.borderColor='rgba(232,200,122,.5)';btn.textContent='Voz ativa';}else{if(_sintetizador)_sintetizador.cancel();btn.style.color='rgba(242,232,217,.3)';btn.style.borderColor='rgba(139,94,60,.3)';btn.textContent='Voz';}}
@@ -360,7 +386,11 @@ function erro(){document.getElementById('ld').classList.remove('ativo');var e=do
 
 function reiniciar(){clearInterval(_timerInterval);if(_sintetizador)_sintetizador.cancel();hist=[];cat='';_resumoTexto='';_apresentacao='';_tempoRestante=50*60;_sysAtual=SYS;_sessaoEncerrada=false;_encerramentoEmCurso=false;if(_somAtivo)toggleSom();if(_modoSilencio)toggleSilencio();if(_silencioTimer)clearTimeout(_silencioTimer);var bs=document.querySelectorAll('.cat');for(var i=0;i<bs.length;i++)bs[i].classList.remove('ativo');document.querySelector('.cat').classList.add('ativo');document.getElementById('problema').value='';document.getElementById('problema').disabled=false;document.getElementById('ri').value='';document.getElementById('ri').disabled=false;document.getElementById('btn-c').disabled=false;document.getElementById('btn-r').disabled=false;document.getElementById('re').classList.remove('vis');document.getElementById('cw').style.display='none';document.getElementById('dialogo').innerHTML='';document.getElementById('er').classList.remove('vis');document.getElementById('nv').classList.remove('vis');document.getElementById('ra').classList.remove('vis');document.getElementById('ld').classList.remove('ativo');document.getElementById('tela-apresentacao').style.display='flex';document.getElementById('tela-sessao').style.display='none';document.getElementById('apres-input').value='';document.getElementById('apres-input').focus();}
 
-document.addEventListener('DOMContentLoaded',async function(){iniciarSupabase();var tl=document.getElementById('tela-login'),ta=document.getElementById('tela-apresentacao'),ts=document.getElementById('tela-sessao'),tb=document.getElementById('tela-bloqueio');if(tl)tl.style.display='none';if(ta)ta.style.display='none';if(ts)ts.style.display='none';if(window.location.hash&&window.location.hash.includes('access_token')){try{await _supabase.auth.exchangeCodeForSession(window.location.hash);window.history.replaceState({},document.title,window.location.pathname);}catch(e){}}var logado=await verificarSessaoAtiva();if(!logado){if(tl)tl.style.display='flex';return;}if(jaFezSessaoHoje()){if(tb){tb.style.display='flex';popularSalaEspera();}}else{if(ta)ta.style.display='flex';}});
+document.addEventListener('DOMContentLoaded',async function(){iniciarSupabase();var tl=document.getElementById('tela-login'),ta=document.getElementById('tela-apresentacao'),ts=document.getElementById('tela-sessao'),tb=document.getElementById('tela-bloqueio');if(tl)tl.style.display='none';if(ta)ta.style.display='none';if(ts)ts.style.display='none';if(window.location.hash&&window.location.hash.includes('access_token')){try{await _supabase.auth.exchangeCodeForSession(window.location.hash);window.history.replaceState({},document.title,window.location.pathname);}catch(e){}}var logado=await verificarSessaoAtiva();if(!logado){if(tl)tl.style.display='flex';return;}
+  var fezHoje=false;
+  try{fezHoje=await verificarSessaoHojeSupabase();}catch(e){}
+  if(!fezHoje)fezHoje=jaFezSessaoHoje();
+  if(fezHoje){if(tb){tb.style.display='flex';popularSalaEspera();}}else{if(ta)ta.style.display='flex';}});
 
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.ctrlKey){var ta=document.getElementById('tela-apresentacao');if(ta&&ta.style.display!=='none'){iniciarSessao();}else if(document.getElementById('re').classList.contains('vis')){responder();}else{consultar();}}});
 </script>
