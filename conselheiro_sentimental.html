@@ -227,15 +227,18 @@ async function enviarMagicLink(){
   msg.textContent='Verificando acesso...';
   msg.style.color='rgba(232,200,122,.5)';
   try{
-    var check=await _supabase.rpc('verificar_email_autorizado',{email_input:email});
-    if(check.error||!check.data){
-      msg.textContent='Este e-mail não tem acesso ao Escutório.';
+    var res=await fetch('/.netlify/functions/enviar-magic-link',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,redirectTo:'https://escutorio.com.br/conselheiro_sentimental.html'})
+    });
+    var data=await res.json();
+    if(!res.ok){
+      msg.textContent=data.error||'Erro ao enviar. Tente novamente.';
       msg.style.color='rgba(200,80,60,.7)';
       btn.disabled=false;
       return;
     }
-    var res=await _supabase.auth.signInWithOtp({email:email,options:{emailRedirectTo:'https://escutorio.com.br/conselheiro_sentimental.html'}});
-    if(res.error)throw res.error;
     msg.textContent='Link enviado. Verifique seu e-mail.';
     msg.style.color='rgba(196,149,106,.8)';
   }catch(e){
